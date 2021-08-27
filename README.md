@@ -8,7 +8,7 @@ AHFHaloTools is a Python 3 library for the analysis of data produced by AMIGA's 
 * [AstroPy](https://www.astropy.org/)
 
 ## Installation
-WIP
+`pip install ahfhalotools`
 
 ## Usage
 The majority of analysis is enabled by the `ahfhalotools.objects.Cluster` object.
