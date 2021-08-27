@@ -68,7 +68,8 @@ ax[0].set_ylabel("Redshift, $z$")
 for i in range(3):
     #generate data for pcolormesh
     vv,zz,freq = clusters[i].genpColorMeshRelSpeedEncHalos(128000000000001,
-                                nbins=100,minv=0, useDensity=True)
+                                nbins=100,minv=0, useDensity=True,
+                                normalizeBy="sigV")
 
     #plot pcolormesh
     pcm = ax[i].pcolormesh(vv,zz,freq,cmap=cm.Blues)
@@ -83,10 +84,11 @@ for i in range(3):
     mergeZ, mergeSize = clusters[i].getLargestMergeZInRange(128000000000001,0,1)
     ax[i].add_line(Line2D(ax[i].get_xlim(),[mergeZ,mergeZ],c='r'))
     pad=5
-    ax[i].annotate('Largest merger event',xy=(0.1,mergeZ),xytext=(0,pad),xycoords="data",
+    leftSide = ax[i].get_xlim()[0]
+    ax[i].annotate('Largest merger event',xy=(leftSide+0.1,mergeZ),xytext=(0,pad),xycoords="data",
                    textcoords="offset points", ha="left", va="bottom", c = 'r',
                    size='large')
-    ax[i].annotate('Size = {0}'.format(mergeSize), xy=(0.1,mergeZ),
+    ax[i].annotate('Size = {0}'.format(mergeSize), xy=(leftSide+0.1,mergeZ),
                    xytext=(0,-pad), xycoords="data",
                    textcoords="offset points", ha="left", va="top", c = 'r',
                    size='large')
@@ -98,7 +100,7 @@ for i in range(3):
         zs = []
         #get average velocities (normalised) with redshift
         for haloID in clusters[i].trackID(128000000000001):
-            speeds = clusters[i].getRelSpeedsOfEncHalos(haloID)
+            speeds = clusters[i].getRelSpeedsOfEncHalos(haloID,normalizeBy="sigV")
             #avg = np.average(speeds)
             avg = np.percentile(speeds,50)
             avgvs.append(avg)
