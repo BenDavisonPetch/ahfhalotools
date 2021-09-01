@@ -449,21 +449,30 @@ class Snapshot:
 
         profileRowCounter = 0
 
-        for halorow in halorows:
+        for rowIndex, halorow in enumerate(halorows):
+
+            hostHalo = int(halorow[1])
+            nbins = int(halorow[36])
+            #if ((hostHalo % 1000000000000) > haloLimit or hostHalo == 0) and\
+            #    rowIndex >= haloLimit:
+            #    #halo is not a subhalo of a halo of interest, nor is a halo
+            #    # of interest itself, so skip
+            #    continue
 
             halo = Halo(halorow,z)
             prevRadius = -float('inf')
 
-            while not (profilerows[profileRowCounter,0] <= 0 and prevRadius > 0):
-                #profile row is still for same halo
-                halo.addProfile(profilerows[profileRowCounter])
+            #read in nbins lines from profiles file if halo is one of first
+            # haloLimit halos
+            if rowIndex < haloLimit:
+                for i in range(nbins):
+                    assert(not (profilerows[profileRowCounter,0] <= 0 and prevRadius > 0))
+                    #profile row is still for same halo
+                    halo.addProfile(profilerows[profileRowCounter])
 
-                prevRadius = profilerows[profileRowCounter,0]
-                profileRowCounter += 1
+                    prevRadius = profilerows[profileRowCounter,0]
+                    profileRowCounter += 1
 
-                #break at end of file
-                if profileRowCounter == len(profilerows):
-                    break
             #loop has broken because next row to consider is for next halo
 
             halos.append(halo)
@@ -582,6 +591,11 @@ class Cluster:
         haloLimit as a number larger than the number of halos you intend to
         investigate.
 
+        Note that haloLimit will not limit the number of halos read in from
+        .AHF_halos files, as extra halos are included during file truncation
+        if they are subhalos of the first n halos (where n is the size of
+        truncation)
+
         Also note that the file format for mtree is NOT SUSSING-2013, this
         class reads files of format specified in the AHF documentation:
             http://popia.ft.uam.es/AHF/files/AHF.pdf (P190)
@@ -621,24 +635,25 @@ class Cluster:
                 halo = Halo(halorow,z)
                 prevRadius = -float('inf')
 
-                while not (profilerows[profileRowCounter,0] <= 0 and prevRadius > 0):
-                    #profile row is still for same halo
-                    halo.addProfile(profilerows[profileRowCounter])
+                #check that we have not already reached end of profiles file,
+                # nor have we read the profiles of haloLimit halos
+                if profileRowCounter < len(profilerows) and haloCounter < haloLimit:
+                    #start reading profile rows
+                    while not (profilerows[profileRowCounter,0] <= 0 and prevRadius > 0):
+                        #profile row is still for same halo
+                        halo.addProfile(profilerows[profileRowCounter])
 
-                    prevRadius = profilerows[profileRowCounter,0]
-                    profileRowCounter += 1
+                        prevRadius = profilerows[profileRowCounter,0]
+                        profileRowCounter += 1
 
-                    #break at end of file
-                    if profileRowCounter == len(profilerows):
-                        break
-                #loop has broken because next row to consider is for next halo
+                        #break at end of file
+                        if profileRowCounter == len(profilerows):
+                            break
+                    #while loop has broken because next row to consider is for next halo
 
                 assert(halo.ID not in self._haloDict)
                 self._haloDict[halo.ID] = halo
                 haloCounter += 1
-
-                if haloCounter == haloLimit:
-                    break
 
             #there is no mtree or mtree_idx for the lowest snapshot in a simulation
             # so we check if we are dealing with the lowest snapshot and if so
@@ -660,7 +675,6 @@ class Cluster:
                 if rowCounter == haloLimit:
                     break
 
-            ## TODO: loading mtree data
             #mtree format:
             #   HaloID(1)   HaloPart(2)  NumProgenitors(3)
             #      SharedPart(1)    HaloID(2)   HaloPart(3)
@@ -826,6 +840,10 @@ class Cluster:
                   "halodata keys, one can call Halo.halodata.keys() on a Halo "\
                   "instance.".format(quantity)
             raise KeyError(msg) from err
+        except AttributeError:
+            #self.getHalo has returned -1, ie we do not have the halo specified
+            #loaded into memory
+            return -1
 
     def funcOfZHaloData(self, haloID, quantity):
         """
@@ -1162,6 +1180,8 @@ class Cluster:
         zs : array of floats
             Redshifts that correspond to the snapshots within which mergers begun
         """
+        # TODO: fix this up
+        print("WARNING: HAS NOT YET BEEN UPDATED")
         zs = []
         for haloID in self.trackID(haloIDtoTrack):
             mtreeEntry = self.getMergeTreeEntry(haloID)
@@ -1191,7 +1211,7 @@ class Cluster:
         """
         return tfromz(self.getMergeZs(haloIDtoTrack,threshold=threshold))
 
-    def getLargestMergeZInRange(self,masterHaloID,minZ,maxZ):
+    def getLargestMergeZInRange(self, masterHaloID, minZ, maxZ, scheme="mtree-sum"):
         """
         Returns the redshift of the largest merger in the range of redshifts specified
 
@@ -1203,6 +1223,14 @@ class Cluster:
             Defines minimum redshift for search range (inc.)
         maxZ : float
             Defines maximum redshift for search range (inc.)
+        scheme : str, optional
+            Defines which scheme to use for calculating size of mergers.
+            Valid values are "mtree-largest", "mtree-sum", "mtree-first", or
+            "halodata"
+            Default is "mtree-sum"
+            To use "mtree-largest" or "mtree-sum", one must have already loaded
+            a .BDP_enchalos file for the master halo.
+            See Notes section for discussion of schemes.
 
         Returns
         -------
@@ -1216,26 +1244,76 @@ class Cluster:
             The size of the largest merge event found in range.
             If there are no snapshots found with redshift inside range specified
             will be 0
+
+        TODO: WRITE NOTES
         """
-        assert(maxZ > minZ)
-        z = None
-        largestMerge = 0
-        for haloID in self.trackID(masterHaloID):
-            #check if halo redshift is inside range specified, if not skip
-            haloZ = self.getHalo(haloID).z
-            if haloZ < minZ or haloZ > maxZ: continue
+        if maxZ <= minZ:
+            msg = "Expected maxZ to be larger than minZ but got maxZ <= minZ!"
+            raise ValueError(msg)
 
-            mtreeEntry = self.getMergeTreeEntry(haloID)
+        validSchemes = ["mtree-largest","mtree-sum","mtree-first","halodata"]
+        if scheme not in validSchemes:
+            msg = "Scheme '{0}' is not a valid scheme! Accepted values are: \n{1}".format(scheme,", ".join(validSchemes))
+            raise ValueError(msg)
 
-            #if there is no merge tree entry for halo, skip
-            if type(mtreeEntry) == type(None): continue
+        if scheme == "mtree-largest" or scheme == "mtree-sum" or scheme == "mtree-first":
+            z = None
+            largestMerge = 0
+            #loop over chain of father halos, not including oldest snapshot
+            # as we will not have data for its enclosed halos
+            for haloID in self.trackID(masterHaloID)[1:]:
+                #check if halo redshift is inside range specified, if not skip
+                haloZ = self.getHalo(haloID).z
+                if haloZ < minZ or haloZ > maxZ: continue
 
-            #get largest merge size for snapshot and compare with current max found
-            mergeSize = max(mtreeEntry[1:,0],default=0)
-            if mergeSize > largestMerge:
-                z = haloZ
-                largestMerge = mergeSize
-        return z, largestMerge
+                #get merge tree entry
+                mtreeEntry = self.getMergeTreeEntry(haloID)
+
+                #if there is no merge tree entry for halo, skip
+                if type(mtreeEntry) == type(None): continue
+
+                #get list of IDs of sub halos of father halo
+                fatherID = self.getFatherOf(haloID)
+                subHaloIDs = [halo.ID for halo in self.getEnclosedHalos(fatherID) if halo.hostHalo == fatherID]
+                #go through merge tree entries and ignore any that are from
+                # halos that were subhalos of the father halo
+                print("looking at halo {0}:".format(haloID))
+                mergeSize = 0
+                for mtreeRow in mtreeEntry[1:]:
+                    #(we exclude first row as that will be the father halo)
+                    progID = mtreeRow[1]
+                    if progID not in subHaloIDs:
+                        print("   non sub halo progenitor found: {0}".format(progID))
+                        #we have a progenitor that was not previously a subhalo
+                        # therefore the particles introduced are new
+
+                        #if using mtree-first we can stop here, if mtree-sum
+                        # we keep going and add all of the non subhalo
+                        # contributions, if mtree-largest we set mergeSize to
+                        # the largest sharedPart we find
+                        if scheme == "mtree-first":
+                            mergeSize = mtreeRow[0]
+                            print("     mergeSize is now {0}\n".format(mergeSize))
+                            break
+                        elif scheme == "mtree-largest":
+                            mergeSize = max(mergeSize,mtreeRow[0])
+                        elif scheme == "mtree-sum":
+                            mergeSize += mtreeRow[0]
+
+                        print("     mergeSize is now {0}\n".format(mergeSize))
+
+                if mergeSize > largestMerge:
+                    z = haloZ
+                    largestMerge = mergeSize
+            return z, largestMerge
+
+        elif scheme == "halodata":
+            # TODO: implement
+            raise NotImplementedError
+
+    """============================="""
+    """   ENCLOSED HALO FUNCTIONS   """
+    """============================="""
 
     def generateEnclosedHaloFile(self,hostHaloID,haloFile,outputFile,useAHFSubHalos=False):
         """
@@ -1416,10 +1494,11 @@ class Cluster:
         """
         try:
             return self._encHaloDict[hostHaloID]
-        except KeyError:
-            print("ERROR: Halo {0} does not have enclosed halos loaded into memory!".format(hostHaloID))
-            print("Before using data on enclosed halos, data must be loaded using\
-                Cluster.loadEnclosedHaloFile() or Cluster.loadEnclosedHaloFilesFromChain()")
+        except KeyError as err:
+            msg = "ERROR: Halo {0} does not have enclosed halos loaded into memory!\n"\
+                  "Before using data on enclosed halos, data must be loaded using"\
+                  "Cluster.loadEnclosedHaloFile() or Cluster.loadEnclosedHaloFilesFromChain()".format(hostHaloID)
+            raise Exception(msg) from err
 
     def getRelVelocitiesOfEncHalos(self, hostHaloID):
         """

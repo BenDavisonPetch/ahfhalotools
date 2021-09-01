@@ -35,11 +35,6 @@ truncFileGX = "first10\\GadgetX\\GX_first10_snap{snap:0=3d}.z{z:.3f}"
 truncFileGiz = "first10\\Gizmo\\giz_first10_snap{snap:0=3d}.z{z:.3f}"
 truncFileMus = "first10\\Music\\mus_first10_snap.z{z:.3f}"
 
-#locations of enclosed halo files
-gxEncHaloFileBase = "gadgetXenchalos//GadgetX-NewMDCLUSTER_0001.halo{haloID}.BDP_enchalos"
-gizEncHaloFileBase = "gizmoenchalos//GIZMO-NewMDCLUSTER_0001.halo{haloID}.BDP_enchalos"
-musEncHaloFileBase = "gadgetMUSICenchalos//GadgetMUSIC-NewMDCLUSTER_0001.halo{haloID}.BDP_enchalos"
-
 #CLUSTER OBJECTS
 gxCluster = Cluster(truncFileGX, snapNosGX, zsGX)
 gizCluster = Cluster(truncFileGiz, snapNosGiz, zsGiz)
@@ -47,15 +42,6 @@ musCluster = Cluster(truncFileMus, snapNosMus, zsMus)
 clusters = [gxCluster,gizCluster,musCluster]
 clusterNames = ["GadgetX","Gizmo","GadgetMUSIC"]
 clusterColors = ["C0","C1","C2"]
-
-#gxCluster.generateEnclosedHaloFilesFromChain(128000000000001,inputFiles,gxEncHaloFileBase)
-#gizCluster.generateEnclosedHaloFilesFromChain(128000000000001,inputFilesGiz,gizEncHaloFileBase)
-#musCluster.generateEnclosedHaloFilesFromChain(128000000000001,inputFilesMus,musEncHaloFileBase)
-
-#LOAD ENCLOSED HALO FILES
-gxCluster.loadEnclosedHaloFilesFromChain(128000000000001,gxEncHaloFileBase)
-gizCluster.loadEnclosedHaloFilesFromChain(128000000000001,gizEncHaloFileBase)
-musCluster.loadEnclosedHaloFilesFromChain(128000000000001,musEncHaloFileBase)
 
 ##----------PLOT-----------##
 
@@ -65,8 +51,8 @@ musCluster.loadEnclosedHaloFilesFromChain(128000000000001,musEncHaloFileBase)
 fig, axes = plt.subplots(1,3,figsize=(15,6),sharey='row')
 haloID = 128000000000001
 
-axisTitles = ["Total Mass", "Gas Mass", "Stellar Mass"]
-quantities = ["Mvir", "M_gas", "M_star"]
+axisTitles = ["Total Mass", "N(Particles)", "Stellar Mass"]
+quantities = ["Mvir", "npart", "M_star"]
 
 #plot on each axis
 for i in range(3):
@@ -85,15 +71,13 @@ for i in range(3):
         #M is going to be 1 element longer than deltaM, as we cannot get delta
         # for a quantity with unknown previous value
         M = M[1:]
-        #deltaMoverM = deltaM/M
-        deltaMoverM = deltaM
+        deltaMoverM = deltaM/M
 
         #plot
         ax.plot(age,deltaMoverM, label=clusterNames[j],c=color)
 
         #add in line to represent time of largest merge
-        print("\n======={0}=======\n".format(clusterNames[j]))
-        mergeZ, mergeSize = cluster.getLargestMergeZInRange(haloID,0,1,scheme="mtree-sum")
+        mergeZ, mergeSize = cluster.getLargestMergeZInRange(haloID,0,1)
         mergeTime = analysis.tfromz(mergeZ)
         ls = ["--","-.",":"][j]
         ax.axvline(mergeTime,c=color,alpha=0.5,lw=(j+2),ls=ls)
@@ -114,6 +98,9 @@ for i in range(3):
 
 #set figure title
 fig.suptitle("$\\frac{\\Delta M}{M}$ as a function of age")
+
+#fix axis labels
+axes[1].set_ylabel("$\\frac{\\Delta npart}{npart}$")
 
 plt.tight_layout()
 plt.show()

@@ -27,21 +27,21 @@ zsGX = np.array([rsmapGX[num] for num in snapNosGX])
 zsGiz = np.array([rsmapGiz[num] for num in snapNosGiz])
 
 #define where truncated files will go
-truncFileGiz = "testTrunc\\Gizmo\\giz_truncd_snap{snap:0=3d}.z{z:.3f}"
-truncFileMus = "testTrunc\\Music\\mus_truncd_snap.z{z:.3f}"
-truncFileGX = "testTrunc\\GX\\GX_truncd_snap{snap:0=3d}.z{z:.3f}"
+truncFileGiz = "data\\cluster1trunc\\GIZMO\\GIZMO_C1_snap{snap:0=3d}.z{z:.3f}"
+truncFileMus = "data\\cluster1trunc\\GadgetMUSIC\\GadgetMUSIC_C1_snap.z{z:.3f}"
+truncFileGX = "data\\cluster1trunc\\GadgetX\\GadgetXX_C1_snap{snap:0=3d}.z{z:.3f}"
 
 ## Truncation ##
 
 #define how many halos truncated files should contain information on
-truncSize = 10
+truncSize = 5
 
 ft.truncateFiles(gxdir + fileNameBaseGX,snapNosGX,zsGX,truncFileGX,truncSize)
 ft.truncateFiles(gizdir + fileNameBaseGiz,snapNosGiz,zsGiz,truncFileGiz,truncSize)
 ft.truncateFiles(musdir + fileNameBaseMus,snapNosMus,zsMus,truncFileMus,truncSize)
 
 #load truncated files once we're done (note, you only need to run truncateFiles
-# ONCE)
+# ONCE for each set of data)
 gxCluster = Cluster(truncFileGX, snapNosGX, zsGX)
 gizCluster = Cluster(truncFileGiz, snapNosGiz, zsGiz)
 musCluster = Cluster(truncFileMus, snapNosMus, zsMus)
