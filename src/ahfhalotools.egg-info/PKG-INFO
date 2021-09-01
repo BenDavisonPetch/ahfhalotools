@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ahfhalotools
-Version: 1.0.0
+Version: 1.0.1
 Summary: A Python 3 library for the analysis of data produced by AMIGA's Halo Finder (AHF).
 Home-page: https://github.com/BenDavisonPetch/ahfhalotools
 Author: Ben Davison-Petch
@@ -24,7 +24,7 @@ AHFHaloTools is a Python 3 library for the analysis of data produced by AMIGA's 
 * [AstroPy](https://www.astropy.org/)
 
 ## Installation
-WIP
+`pip install ahfhalotools`
 
 ## Usage
 The majority of analysis is enabled by the `ahfhalotools.objects.Cluster` object.

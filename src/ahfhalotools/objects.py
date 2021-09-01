@@ -811,6 +811,7 @@ class Cluster:
         quantity : str
             The name of the halo data piece to return
             e.g. "Rvir", "Mvir", "Ekin", "Qvir", etc
+            Does not accept delta quantities
 
         Returns
         -------
@@ -820,9 +821,11 @@ class Cluster:
         halo = self.getHalo(haloID)
         try:
             return halo.halodata[quantity]
-        except KeyError:
-            print("WARNING: Invalid halo data key in getHaloData()")
-            return -1
+        except KeyError as err:
+            msg = "Invalid Halo Data quantity key {0}. To retreive valid "\
+                  "halodata keys, one can call Halo.halodata.keys() on a Halo "\
+                  "instance.".format(quantity)
+            raise KeyError(msg) from err
 
     def funcOfZHaloData(self, haloID, quantity):
         """
@@ -837,6 +840,8 @@ class Cluster:
         quantity : str
             The name of the halo data piece to return
             e.g. "Rvir", "Mvir", "Ekin", "Qvir", etc
+            Returns time delta of quantities when key is preceded by "delta",
+            e.g. "deltaRvir", "deltaMvir", "deltaEkin", etc
 
         Returns
         -------
@@ -845,14 +850,30 @@ class Cluster:
         values : list
             Array of values specified by quantity parameter as a function
             of time
+
+        See Also
+        --------
+        Cluster.funcOfAgeHaloData : get halo data as a function of age
+        Cluster.funcOfZDeltaHaloData :
+            get the time delta of a halo data quantity as a function of redshift
+        Cluster.funcOfAgeDeltaHaloData :
+            get the time delta of a halo data quantity as a function of age
         """
+        if quantity.startswith("delta"):
+            #return delta value instead of normal value
+            return self.funcOfZDeltaHaloData(haloID,quantity[5:])
+
+        #for normal values:
         halos = self.trackHalo(haloID)
-        zs = [halo.z for halo in halos]
+        zs = np.array([halo.z for halo in halos])
         values = None
         try:
-            values = [halo.halodata[quantity] for halo in halos]
-        except KeyError:
-            print("INVALID HALODATA QUANTITY KEY IN funcOfTimeHaloData()")
+            values = np.array([halo.halodata[quantity] for halo in halos])
+        except KeyError as err:
+            msg = "Invalid Halo Data quantity key {0}. To retreive valid "\
+                  "halodata keys, one can call Halo.halodata.keys() on a Halo "\
+                  "instance.".format(quantity)
+            raise KeyError(msg) from err
         return zs, values
 
     def funcOfAgeHaloData(self, haloID, quantity):
@@ -868,6 +889,8 @@ class Cluster:
         quantity : str
             The name of the halo data piece to return
             e.g. "Rvir", "Mvir", "Ekin", "Qvir", etc
+            Returns time delta of quantities when key is preceded by "delta",
+            e.g. "deltaRvir", "deltaMvir", "deltaEkin", etc
 
         Returns
         -------
@@ -876,9 +899,100 @@ class Cluster:
         values : list
             Array of values specified by quantity parameter as a function
             of time
+
+        See Also
+        --------
+        Cluster.funcOfZHaloData : get halo data as a function of redshift
+        Cluster.funcOfZDeltaHaloData :
+            get the time delta of a halo data quantity as a function of redshift
+        Cluster.funcOfAgeDeltaHaloData :
+            get the time delta of a halo data quantity as a function of age
         """
         zs, values = self.funcOfZHaloData(haloID,quantity)
         return tfromz(zs), values
+
+    def funcOfZDeltaHaloData(self, haloID, quantity):
+        """
+        Returns the change (delta) in a piece of halo data as a function of
+        redshift. To be used for quantities stored in the .AHF_halos file.
+
+        Delta q at redshift z2 is calculated as q(z2)-q(z1) where z1 is the
+        redshift of the previous snapshot. Note that this requires snapshots
+        to have relatively even redshift spacing for delta quantities to be
+        comparible over time.
+
+        Parameters
+        ----------
+        haloID : int
+            The full haloID of the halo to investigate at z=0
+        quantity : str
+            The name of the halo data piece to return
+            e.g. "Rvir", "Mvir", "Ekin", "Qvir", etc
+            Note that the quantity should not include a "delta"
+
+        Returns
+        -------
+        zs : list of float
+            The redshifts correspond to each of the values in deltaValues
+        deltaValues : list of float
+            The delta values of the quantity specified
+
+        See Also
+        --------
+        Cluster.funcOfZHaloData : get halo data as a function of redshift
+        Cluster.funcOfAgeHaloData : get halo data as a function of age
+        Cluster.funcOfAgeDeltaHaloData :
+            get the time delta of a halo data quantity as a function of age
+        """
+        if quantity.startswith("delta"):
+            quantity = quantity[5:]
+
+        #get redshifts and values for non-delta quantity
+        zs, values = self.funcOfZHaloData(haloID, quantity)
+
+        #calculate delta values
+        deltaValues = values[1:]-values[:-1]
+        #take off highest redshift from zs (can't calculate delta quantity
+        # without an older snapshot)
+        zs = zs[1:]
+
+        return zs, deltaValues
+
+    def funcOfAgeDeltaHaloData(self, haloID, quantity):
+        """
+        Returns the change (delta) in a piece of halo data as a function of
+        age in Gyr. To be used for quantities stored in the .AHF_halos file.
+
+        Delta q at age t2 is calculated as q(t2)-q(t1) where t1 is the
+        age of the previous snapshot. Note that this requires snapshots
+        to have relatively even redshift spacing for delta quantities to be
+        comparible over time.
+
+        Parameters
+        ----------
+        haloID : int
+            The full haloID of the halo to investigate at z=0
+        quantity : str
+            The name of the halo data piece to return
+            e.g. "Rvir", "Mvir", "Ekin", "Qvir", etc
+            Note that the quantity should not include a "delta"
+
+        Returns
+        -------
+        ts : list of float
+            The ages in Gyr correspond to each of the values in deltaValues
+        deltaValues : list of float
+            The delta values of the quantity specified
+
+        See Also
+        --------
+        Cluster.funcOfZHaloData : get halo data as a function of redshift
+        Cluster.funcOfAgeHaloData : get halo data as a function of age
+        Cluster.funcOfZDeltaHaloData :
+            get the time delta of a halo data quantity as a function of redshift
+        """
+        zs, deltaValues = self.funcOfZDeltaHaloData(haloID,quantity)
+        return tfromz(zs), deltaValues
 
     def funcOfZProfileData(self, haloID, quantity, radius):
         """

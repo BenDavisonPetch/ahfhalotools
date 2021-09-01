@@ -1,1 +1,3 @@
 upload.bat
+dist/
+*.egg-info
