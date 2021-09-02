@@ -111,8 +111,5 @@ def tfromz(z):
     Also uses Omega_M and Omega_B from GadgetX parameters
     (Om0=0.307, Ob0=0.048)
     """
-    #gets redshift as parameter and returns age of universe in Gyr
-    #uses WMAP9.H(0) as current hubble constant
-    #also uses Omega_M and Omega_B from GadgetX parameters
     flcdm = FlatLambdaCDM(H0=WMAP9.H(0), Om0=0.307, Ob0=0.048)
     return flcdm.age(z).value

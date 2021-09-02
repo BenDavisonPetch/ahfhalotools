@@ -84,19 +84,19 @@ for i in range(3):
         _, M = cluster.funcOfAgeHaloData(haloID,quantities[i])
         #M is going to be 1 element longer than deltaM, as we cannot get delta
         # for a quantity with unknown previous value
-        M = M[1:]
-        #deltaMoverM = deltaM/M
-        deltaMoverM = deltaM
+        # note that delta M should be divided by M of halo of *earlier* snapshot
+        M = M[:-1]
+        deltaMoverM = deltaM/M
+        #deltaMoverM = deltaM
 
         #plot
         ax.plot(age,deltaMoverM, label=clusterNames[j],c=color)
 
         #add in line to represent time of largest merge
-        print("\n======={0}=======\n".format(clusterNames[j]))
-        mergeZ, mergeSize = cluster.getLargestMergeZInRange(haloID,0,1,scheme="mtree-sum")
+        mergeZ, mergeSize = cluster.getLargestMergeZInRange(haloID,0,1,scheme="halodata",fractional=False)
         mergeTime = analysis.tfromz(mergeZ)
         ls = ["--","-.",":"][j]
-        ax.axvline(mergeTime,c=color,alpha=0.5,lw=(j+2),ls=ls)
+        ax.axvline(mergeTime,c=color,alpha=0.7,lw=(4-j),ls=ls)
 
     #set labels
     ax.set_title(axisTitles[i])
@@ -107,9 +107,9 @@ for i in range(3):
     #annotate merge lines
     pad=15
     topCoord = ax.get_ylim()[1]
-    toppad = 0.01*(topCoord-ax.get_ylim()[0])
-    ax.annotate('Largest merger events',xy=(mergeTime,topCoord-toppad),xytext=(pad,0),xycoords="data",
-                   textcoords="offset points", ha="left", va="top", c = 'dimgrey')
+    toppad = 0.02*(topCoord-ax.get_ylim()[0])
+    ax.annotate('Largest merger events\nusing halo data',xy=(mergeTime,topCoord-toppad),xytext=(-pad,0),xycoords="data",
+                   textcoords="offset points", ha="right", va="top", c = 'dimgrey')
 
 
 #set figure title

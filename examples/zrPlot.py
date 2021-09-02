@@ -61,6 +61,7 @@ for colIndex in range(3):
         quantity = quantities[rowIndex]
         # x and y coordinates of points are r and z
         r,z,vals = cluster.funcOfRandZProfileDataPoints(haloID,quantity,removeZeroes = True)
+        #print(r,z,haloID,quantity)
         vals = vals * (r ** 2)
 
         #remove negative radii (test)

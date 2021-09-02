@@ -1,6 +1,7 @@
 import numpy as np
 from .analysis import *
 from .filetools import *
+import warnings
 
 #number of columns in profile table
 PROFILE_COLUMNS = 29
@@ -561,7 +562,7 @@ class Cluster:
     """
     def __init__(self, fileBaseName, snapNums, zs, profileExt=".AHF_profiles",
             haloExt=".AHF_halos",mtreeidxExt=".AHF_mtree_idx",
-            mtreeExt=".AHF_mtree", haloLimit=-1):
+            mtreeExt=".AHF_mtree", haloLimit=np.inf):
         """
         Initialises the cluster object from .AHF_profiles and .AHF_halos files
 
@@ -745,23 +746,6 @@ class Cluster:
         except KeyError:
             #no father stored for halo, so will return -1
             return -1
-
-    def getChildrenOf(self,haloID):
-        """
-        Returns the list of haloIDs of children of a given halo
-
-        Parameters
-        ----------
-        haloID : int
-            The full haloID of the parent halo
-            e.g. 128000000000002, 102000000000023
-
-        Returns
-        -------
-        childrenIDs : list of ints
-            List of IDs of child halos
-        """
-        raise NotImplementedError
 
     def getMergeTreeEntry(self, haloID):
         """
@@ -1106,6 +1090,7 @@ class Cluster:
         zs = np.empty(0)
         vals = np.empty(0)
         for haloID in haloIDs:
+
             #add rows to grid
             rrow, valrow = self.funcOfRadiusProfileData(haloID, quantity)
             zrow = [self.getHalo(haloID).z]*len(rrow)
@@ -1155,7 +1140,6 @@ class Cluster:
         except KeyError:
             print("INVALID QUANTITY KEY IN PROFILEDATA")
             values = np.array([-1]*len(rs))
-
         if removeZeroes:
             #search for 0s in vals
             indexes = np.argwhere(values==0)
@@ -1163,7 +1147,113 @@ class Cluster:
             rs = np.delete(rs, indexes)
         return rs, values
 
-    def getMergeZs(self,haloIDtoTrack,threshold=1000):
+    def getMergeSize(self, haloID, scheme = "halodata", fractional = True):
+        """
+        Calculates the size of the merger that the halo experienced between
+        snapshots.
+
+        Parameters
+        ----------
+        haloID : int
+            The halo ID of the halo being investigated, in the snapshot after
+            the merge.
+            (i.e. to get the size of the merger between snapshot 102 to 103, one
+            would use the ID 10300000000000x)
+        scheme : str, default = "halodata"
+            Defines which scheme to use for calculating size of mergers.
+            Valid values are "mtree-largest", "mtree-sum", "mtree-first", or
+            "halodata"
+            To use "mtree-largest" or "mtree-sum", one must have already loaded
+            a .BDP_enchalos file for the master halo.
+            For an explanation of the schemes please see:
+            https://github.com/BenDavisonPetch/ahfhalotools/blob/main/merger_detection_scheme_guide.md
+        fractional : bool, default = True
+            Specifies whether the returned size should be the fractional size
+            (returned as a decimal), or the absolute size (returned as the
+            number of particles).
+
+        Returns
+        -------
+        size : number
+            The size of the merger. If fractional is true, size will be a
+            decimal float representing the fractional merger size, and if
+            false, will be an integer number of particles.
+            If the scheme is an mtree scheme, and the halo has no merger tree
+            entry, will return -1.
+
+        See Also
+        --------
+        TODO
+        """
+        validSchemes = ["mtree-largest","mtree-sum","mtree-first","halodata"]
+        if scheme not in validSchemes:
+            msg = "Scheme '{0}' is not a valid scheme! Accepted values are: \n{1}".format(scheme,", ".join(validSchemes))
+            raise ValueError(msg)
+
+        if scheme == "mtree-largest" or scheme == "mtree-sum" or scheme == "mtree-first":
+            #get merge tree entry
+            mtreeEntry = self.getMergeTreeEntry(haloID)
+
+            #if there is no merge tree entry for halo, return -1
+            if type(mtreeEntry) == type(None):
+                msg = "Halo {0} has no merge tree entry! Returning -1".format(haloID)
+                warnings.warn(msg, RuntimeWarning)
+                return -1
+
+            #get list of IDs of sub halos of father halo
+            fatherID = self.getFatherOf(haloID)
+            #assert(mtreeEntry[0,1]==fatherID)
+            subHaloIDs = [halo.ID for halo in self.getEnclosedHalos(fatherID) if halo.hostHalo == fatherID]
+            #go through merge tree entries and ignore any that are from
+            # halos that were subhalos of the father halo
+            #print("looking at halo {0}:".format(haloID))
+            mergeSize = 0
+            for mtreeRow in mtreeEntry[1:]:
+                #(we exclude first row as that will be the father halo)
+                progID = mtreeRow[1]
+                if progID not in subHaloIDs:
+                    #print("   non sub halo progenitor found: {0}".format(progID))
+                    #print("   shared size is {0}".format(mtreeRow[0]))
+                    #we have a progenitor that was not previously a subhalo
+                    # therefore the particles introduced are new
+
+                    #if using mtree-first we can stop here, if mtree-sum
+                    # we keep going and add all of the non subhalo
+                    # contributions, if mtree-largest we set mergeSize to
+                    # the largest sharedPart we find
+                    if scheme == "mtree-first":
+                        mergeSize = mtreeRow[0]
+                        break
+                    elif scheme == "mtree-largest":
+                        mergeSize = max(mergeSize,mtreeRow[0])
+                    elif scheme == "mtree-sum":
+                        mergeSize += mtreeRow[0]
+
+            #print("mergeSize is now {0}\n".format(mergeSize))
+
+            if fractional:
+                fatherSize = mtreeEntry[0,2]
+                mergeSize /= fatherSize
+
+            return mergeSize
+        elif scheme == "halodata":
+            #scheme only relies on delta M and M from .AHF_halos file
+            fatherID = self.getFatherOf(haloID)
+            if fatherID == -1:
+                return -1
+
+            #calculate delta M
+            fatherM = self.getHaloData(fatherID,"Mvir")
+            childM = self.getHaloData(haloID,"Mvir")
+            mergeSize = (childM-fatherM)
+
+            #if fractional divide by father mass
+            if fractional:
+                mergeSize /= fatherM
+            return mergeSize
+
+
+    def getMergeZs(self,haloIDtoTrack,threshold=0.2,scheme="halodata",fractional=True):
         """
         Returns the red shifts at which halo experiences merger above specified
         threshold
@@ -1171,47 +1261,88 @@ class Cluster:
         Parameters
         ----------
         haloIDtoTrack : int
-            full haloID of haloID to track - will track backwards through time
-        threshold : int, default = 1000
-            threshold of shared particles above which event is considered a "merger"
+            The full haloID of haloID to track - will track backwards through
+            time
+        threshold : float, default = 0.2
+            The threshold for merge size
+        scheme : str, default = "halodata"
+            Defines which scheme to use for calculating size of mergers.
+            Valid values are "mtree-largest", "mtree-sum", "mtree-first", or
+            "halodata"
+            To use "mtree-largest" or "mtree-sum", one must have already loaded
+            a .BDP_enchalos file for the master halo.
+            For an explanation of the schemes please see:
+            https://github.com/BenDavisonPetch/ahfhalotools/blob/main/merger_detection_scheme_guide.md
+        fractional : bool, default = True
+            Specifies whether the merger size should be the fractional size
+            as a decimal, or the absolute size as the number of particles
+            (mtree) / mass increment (halodata).
 
         Returns
         -------
         zs : array of floats
-            Redshifts that correspond to the snapshots within which mergers begun
-        """
-        # TODO: fix this up
-        print("WARNING: HAS NOT YET BEEN UPDATED")
-        zs = []
-        for haloID in self.trackID(haloIDtoTrack):
-            mtreeEntry = self.getMergeTreeEntry(haloID)
-            #if there is no mtree entry, skip
-            if type(mtreeEntry) == type(None): continue
-            if max(mtreeEntry[1:,0],default=0) > threshold:
-                #halo has experienced a merger larger than threshold
-                zs.append(self.getHalo(haloID).z)
-        return np.array(zs)
+            The redshifts that correspond to the snapshots just after the merges
+            occur
+        sizes : array of floats
+            The sizes of the mergers
 
-    def getMergeTimes(self,haloIDtoTrack,threshold=1000):
+        See Also
+        --------
+        TODO
         """
-        Returns the ages in Gyr at which halo experiences merger above specified
+        zs = []
+        sizes = []
+        for haloID in self.trackID(haloIDtoTrack)[1:]:
+            #get merge size
+            mergeSize = self.getMergeSize(haloID,scheme=scheme,fractional=fractional)
+            #check if merger is larger than threshold, if it is add redshift and
+            # size to list to return
+            if mergeSize > threshold:
+                zs.append(self.getHalo(haloID).z)
+                sizes.append(mergeSize)
+        return np.array(zs), np.array(sizes)
+
+    def getMergeTimes(self,haloIDtoTrack,threshold=0.2,scheme="halodata",fractional=True):
+        """
+        Returns the ages at which halo experiences merger above specified
         threshold
 
         Parameters
         ----------
         haloIDtoTrack : int
-            full haloID of haloID to track - will track backwards through time
-        threshold : int, default = 1000
-            threshold of shared particles above which event is considered a "merger"
+            The full haloID of haloID to track - will track backwards through
+            time
+        threshold : float, default = 0.2
+            The threshold for merge size
+        scheme : str, default = "halodata"
+            Defines which scheme to use for calculating size of mergers.
+            Valid values are "mtree-largest", "mtree-sum", "mtree-first", or
+            "halodata"
+            To use "mtree-largest" or "mtree-sum", one must have already loaded
+            a .BDP_enchalos file for the master halo.
+            For an explanation of the schemes please see:
+            https://github.com/BenDavisonPetch/ahfhalotools/blob/main/merger_detection_scheme_guide.md
+        fractional : bool, default = True
+            Specifies whether the merger size should be the fractional size
+            as a decimal, or the absolute size as the number of particles
+            (mtree) / mass increment (halodata).
 
         Returns
         -------
         ages : array of floats
-            Ages in Gyr that correspond to the snapshots within which mergers begun
-        """
-        return tfromz(self.getMergeZs(haloIDtoTrack,threshold=threshold))
+            The ages that correspond to the snapshots just after the merges
+            occur
+        sizes : array of floats
+            The sizes of the mergers
 
-    def getLargestMergeZInRange(self, masterHaloID, minZ, maxZ, scheme="mtree-sum"):
+        See Also
+        --------
+        TODO
+        """
+        zs, sizes = self.getMergeZs(haloIDtoTrack,threshold=threshold,scheme=scheme,fractional=fractional)
+        return tfromz(zs), sizes
+
+    def getLargestMergeZInRange(self, masterHaloID, minZ, maxZ, scheme="halodata", fractional = True):
         """
         Returns the redshift of the largest merger in the range of redshifts specified
 
@@ -1223,14 +1354,18 @@ class Cluster:
             Defines minimum redshift for search range (inc.)
         maxZ : float
             Defines maximum redshift for search range (inc.)
-        scheme : str, optional
+        scheme : str, default = "halodata"
             Defines which scheme to use for calculating size of mergers.
             Valid values are "mtree-largest", "mtree-sum", "mtree-first", or
             "halodata"
-            Default is "mtree-sum"
             To use "mtree-largest" or "mtree-sum", one must have already loaded
             a .BDP_enchalos file for the master halo.
-            See Notes section for discussion of schemes.
+            For an explanation of the schemes please see:
+            https://github.com/BenDavisonPetch/ahfhalotools/blob/main/merger_detection_scheme_guide.md
+        fractional : bool, default = True
+            Specifies whether the merger size should be the fractional size
+            as a decimal, or the absolute size as the number of particles
+            (mtree) / mass increment (halodata).
 
         Returns
         -------
@@ -1244,72 +1379,27 @@ class Cluster:
             The size of the largest merge event found in range.
             If there are no snapshots found with redshift inside range specified
             will be 0
-
-        TODO: WRITE NOTES
         """
-        if maxZ <= minZ:
-            msg = "Expected maxZ to be larger than minZ but got maxZ <= minZ!"
+        if maxZ < minZ:
+            msg = "Expected maxZ >= minZ but got maxZ < minZ!"
             raise ValueError(msg)
 
-        validSchemes = ["mtree-largest","mtree-sum","mtree-first","halodata"]
-        if scheme not in validSchemes:
-            msg = "Scheme '{0}' is not a valid scheme! Accepted values are: \n{1}".format(scheme,", ".join(validSchemes))
-            raise ValueError(msg)
+        z = None
+        largestMerge = 0
+        #loop over chain of father halos, not including oldest snapshot
+        # as we will not have data for its father's enclosed halos
+        for haloID in self.trackID(masterHaloID)[1:]:
+            #check if halo redshift is inside range specified, if not skip
+            haloZ = self.getHalo(haloID).z
+            if haloZ < minZ or haloZ > maxZ: continue
 
-        if scheme == "mtree-largest" or scheme == "mtree-sum" or scheme == "mtree-first":
-            z = None
-            largestMerge = 0
-            #loop over chain of father halos, not including oldest snapshot
-            # as we will not have data for its enclosed halos
-            for haloID in self.trackID(masterHaloID)[1:]:
-                #check if halo redshift is inside range specified, if not skip
-                haloZ = self.getHalo(haloID).z
-                if haloZ < minZ or haloZ > maxZ: continue
+            #get merger size
+            mergeSize = self.getMergeSize(haloID,scheme=scheme,fractional=fractional)
 
-                #get merge tree entry
-                mtreeEntry = self.getMergeTreeEntry(haloID)
-
-                #if there is no merge tree entry for halo, skip
-                if type(mtreeEntry) == type(None): continue
-
-                #get list of IDs of sub halos of father halo
-                fatherID = self.getFatherOf(haloID)
-                subHaloIDs = [halo.ID for halo in self.getEnclosedHalos(fatherID) if halo.hostHalo == fatherID]
-                #go through merge tree entries and ignore any that are from
-                # halos that were subhalos of the father halo
-                print("looking at halo {0}:".format(haloID))
-                mergeSize = 0
-                for mtreeRow in mtreeEntry[1:]:
-                    #(we exclude first row as that will be the father halo)
-                    progID = mtreeRow[1]
-                    if progID not in subHaloIDs:
-                        print("   non sub halo progenitor found: {0}".format(progID))
-                        #we have a progenitor that was not previously a subhalo
-                        # therefore the particles introduced are new
-
-                        #if using mtree-first we can stop here, if mtree-sum
-                        # we keep going and add all of the non subhalo
-                        # contributions, if mtree-largest we set mergeSize to
-                        # the largest sharedPart we find
-                        if scheme == "mtree-first":
-                            mergeSize = mtreeRow[0]
-                            print("     mergeSize is now {0}\n".format(mergeSize))
-                            break
-                        elif scheme == "mtree-largest":
-                            mergeSize = max(mergeSize,mtreeRow[0])
-                        elif scheme == "mtree-sum":
-                            mergeSize += mtreeRow[0]
-
-                        print("     mergeSize is now {0}\n".format(mergeSize))
-
-                if mergeSize > largestMerge:
-                    z = haloZ
-                    largestMerge = mergeSize
-            return z, largestMerge
-
-        elif scheme == "halodata":
-            # TODO: implement
-            raise NotImplementedError
+            if mergeSize > largestMerge:
+                z = haloZ
+                largestMerge = mergeSize
+        return z, largestMerge
 
     """============================="""
     """   ENCLOSED HALO FUNCTIONS   """
