@@ -412,6 +412,8 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
         directory += "/"
     if not clusterFolderFmt.endswith("/"):
         clusterFolderFmt += "/"
+    if not outputDir.endswith("/"):
+        outputDir += "/"
 
     #using safe formatter to retain unused keys
     fmt = SafeFormatter()
