@@ -93,13 +93,13 @@ for i in range(3):
     ax[iax].axhline(mergeZ,c='r')
     ax[iax-1].axhline(mergeZ,c='r')
     pad=5
-    ax[iax].annotate('Largest merger event',xy=(0.1,mergeZ),xytext=(0,pad),xycoords="data",
+    ax[iax].annotate('Largest merger event',xy=(0.05,mergeZ),xytext=(0,pad),xycoords="data",
                    textcoords="offset points", ha="left", va="bottom", c = 'r',
-                   size='large')
-    ax[iax].annotate('Size = {0}'.format(mergeSize), xy=(0.1,mergeZ),
+                   size='medium')
+    ax[iax].annotate('Size = {0:.2f}'.format(mergeSize), xy=(0.05,mergeZ),
                    xytext=(0,-pad), xycoords="data",
                    textcoords="offset points", ha="left", va="top", c = 'r',
-                   size='large')
+                   size='medium')
 
     #getting median and skewness
     medians = []

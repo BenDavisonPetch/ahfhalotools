@@ -7,6 +7,7 @@ import ahfhalotools.filetools as ft
 from ahfhalotools.objects import Cluster
 
 ## -----------Load Cluster Instances--------------##
+MERGER_THRESHOLD = 0.1
 
 #define base file name (these are for full files)
 fileNameBaseGX = "GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
@@ -84,27 +85,52 @@ for colIndex in range(3):
         if colIndex == 2:
             cbar.set_label("$\\log_{10}(\\; \\rho_{loc} \\; r^2 \\;)$")
 
-        #add merge line to plot
-        mergeZ,mergeSize = cluster.getLargestMergeZInRange(haloID,0,1)
-        #print(mergeSize)
+        # #add merge line to plot
+        # mergeZ,mergeSize = cluster.getLargestMergeZInRange(haloID,0,1)
+        # #print(mergeSize)
+        # mergeColor = 'k'
+        # ax1.add_line(Line2D(ax1.get_xlim(),[mergeZ,mergeZ],color=mergeColor))
+        # mergepad=5
+        # labelx = ax1.get_xlim()[0] + 0.1
+        # ax1.annotate('Largest merger event',xy=(labelx,mergeZ),xytext=(0,mergepad),xycoords="data",
+        #                textcoords="offset points", ha="left", va="bottom", c = mergeColor,
+        #                size='large')
+        # ax1.annotate('Size = {0}'.format(mergeSize), xy=(labelx,mergeZ),
+        #                xytext=(0,-mergepad), xycoords="data",
+        #                textcoords="offset points", ha="left", va="top", c = mergeColor,
+        #                size='large')
+
+        ## merge lines with threshold
         mergeColor = 'k'
-        ax1.add_line(Line2D(ax1.get_xlim(),[mergeZ,mergeZ],color=mergeColor))
-        mergepad=5
-        labelx = ax1.get_xlim()[0] + 0.1
-        ax1.annotate('Largest merger event',xy=(labelx,mergeZ),xytext=(0,mergepad),xycoords="data",
-                       textcoords="offset points", ha="left", va="bottom", c = mergeColor,
-                       size='large')
-        ax1.annotate('Size = {0}'.format(mergeSize), xy=(labelx,mergeZ),
-                       xytext=(0,-mergepad), xycoords="data",
+        mergeTextColor = 'limegreen'
+        mergelw = 1
+        labelxL = ax1.get_xlim()[0] + 0.1
+        labelxR = ax1.get_xlim()[1] - 0.1
+        #titley = ax1.get_ylim()[1] - 0.1
+        mergepad = 2
+        #get merge sizes
+        mergeZs, mergeSizes = cluster.getMergeZs(haloID,threshold=MERGER_THRESHOLD)
+        #plot lines
+        for i, (mergeZ, mergeSize) in enumerate(zip(mergeZs,mergeSizes)):
+            labelx = [labelxL,labelxR][i%2]
+            ha = ["left","right"][i%2]
+            ax1.axhline(mergeZ,c=mergeColor,lw=mergelw)
+            ax1.annotate('Size = {0:.2f}'.format(mergeSize), xy=(labelx,mergeZ),
+                           xytext=(0,-mergepad), xycoords="data",
+                           textcoords="offset points", ha=ha, va="top", c = mergeTextColor,
+                           size='small')
+        #plot merge title
+        ax1.annotate('Mergers > {0:.2f}'.format(MERGER_THRESHOLD), xy=(0.05,0.95),
+                       xytext=(0,0), xycoords="axes fraction",
                        textcoords="offset points", ha="left", va="top", c = mergeColor,
-                       size='large')
+                       size='medium')
 
 
 #label axes
 ax[0,0].set_title("GadgetX")
 ax[0,1].set_title("Gizmo")
 ax[0,2].set_title("GadgetMUSIC")
-[ax[1,i].set_xlabel("$\\log_{10}(r/kpc \\; h^{-1})$") for i in range(3)]
+[ax[1,i].set_xlabel("$\\log_{10}(\\; r \\; / \\; kpc \\; h^{-1} \\; )$") for i in range(3)]
 [ax[i,0].set_ylabel("Redshift, $z$") for i in range(2)]
 fig.suptitle("Local Density x Radius Squared as a function of z and r")
 

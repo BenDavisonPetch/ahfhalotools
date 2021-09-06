@@ -85,13 +85,13 @@ for i in range(3):
     ax[i].add_line(Line2D(ax[i].get_xlim(),[mergeZ,mergeZ],c='r'))
     pad=5
     leftSide = ax[i].get_xlim()[0]
-    ax[i].annotate('Largest merger event',xy=(leftSide+0.1,mergeZ),xytext=(0,pad),xycoords="data",
+    ax[i].annotate('Largest merger event',xy=(leftSide+0.05,mergeZ),xytext=(0,pad),xycoords="data",
                    textcoords="offset points", ha="left", va="bottom", c = 'r',
-                   size='large')
-    ax[i].annotate('Size = {0}'.format(mergeSize), xy=(leftSide+0.1,mergeZ),
+                   size='medium')
+    ax[i].annotate('Size = {0:.2f}'.format(mergeSize), xy=(leftSide+0.05,mergeZ),
                    xytext=(0,-pad), xycoords="data",
                    textcoords="offset points", ha="left", va="top", c = 'r',
-                   size='large')
+                   size='medium')
 
     if PLOT_AVERAGES:
         avgvs = []
