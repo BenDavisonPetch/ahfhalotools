@@ -563,10 +563,19 @@ class Cluster:
     """
     Stores information about every halo in every snapshot in the cluster over time
     Designed for data produced by AMIGA's Halo Finder (AHF)
+
+    Attributes
+    ----------
+    simName : str
+        Specifies the name of the simulation used to create the cluster, if
+        specified during initialisation
+    clusterNum : int
+        Specifies the number of the cluster that the object belongs to
+        Defaults to 0 if not specified during initialisation
     """
     def __init__(self, fileBaseName, snapNums, zs, profileExt=".AHF_profiles",
             haloExt=".AHF_halos",mtreeidxExt=".AHF_mtree_idx",
-            mtreeExt=".AHF_mtree", haloLimit=np.inf):
+            mtreeExt=".AHF_mtree", haloLimit=np.inf, clusterNum = 0, simName = ""):
         """
         Initialises the cluster object from .AHF_profiles and .AHF_halos files
 
@@ -586,6 +595,12 @@ class Cluster:
         haloLimit : int, optional
             Specifies maximum number of halos to load into memory per snapshot
             (see Notes)
+        clusterNum : int, optional
+            Specifies the number of the cluster that the object belongs to
+            Defaults to 0
+        simName : str, optional
+            Specifies the name of the simulation used to create the cluster
+            Defaults to ""
 
         Notes
         -----
@@ -607,6 +622,9 @@ class Cluster:
         """
         #load in data
         assert(len(snapNums)==len(zs))
+
+        self.simName = simName
+        self.clusterNum = clusterNum
 
         #haloDict maps haloID -> halo object
         self._haloDict = dict()

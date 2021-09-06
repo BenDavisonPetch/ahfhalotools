@@ -1,18 +1,21 @@
 """
 A collection of methods useful for dealing with AHF files, including automatic
-snapshot to redshift mapping from filenames, and file truncation.
+snapshot to redshift mapping from filenames, reading multiple clusters at once,
+and file truncation.
 """
 
 import os
 import numpy as np
 from .objects import *
 from .analysis import *
+import string
 
 def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
                   haloFileExt = ".AHF_halos",profileFileExt = ".AHF_profiles",
                   mtreeidxExt = ".AHF_mtree_idx", mtreeExt = ".AHF_mtree"):
     """
-    Truncates sets of AHF data files such as to shorten load times.
+    Truncates sets of AHF data files for a single cluster such as to shorten
+    load times.
 
     Parameters
     ----------
@@ -41,6 +44,10 @@ def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
         File extension to use for AHF_mtree_idx files
     mtreeExt : str, default = ".AHF_mtree"
         File extension to use for AHF_mtree files
+
+    See Also
+    --------
+    truncateClusters : truncates files from multiple clusters at once
 
     Notes
     -----
@@ -193,3 +200,228 @@ def getMusZs(directory=""):
     #sort list such that in descending order
     zs.sort(reverse=True)
     return zs
+
+class SafeFormatter(string.Formatter):
+    """
+    A string formatter used to preserve unused keys.
+
+    Taken from https://stackoverflow.com/a/34033230
+    """
+    def vformat(self, format_string, args, kwargs):
+        args_len = len(args)  # for checking IndexError
+        tokens = []
+        for (lit, name, spec, conv) in self.parse(format_string):
+            # re-escape braces that parse() unescaped
+            lit = lit.replace('{', '{{').replace('}', '}}')
+            # only lit is non-None at the end of the string
+            if name is None:
+                tokens.append(lit)
+            else:
+                # but conv and spec are None if unused
+                conv = '!' + conv if conv else ''
+                spec = ':' + spec if spec else ''
+                # name includes indexing ([blah]) and attributes (.blah)
+                # so get just the first part
+                fp = name.split('[')[0].split('.')[0]
+                # treat as normal if fp is empty (an implicit
+                # positional arg), a digit (an explicit positional
+                # arg) or if it is in kwargs
+                if not fp or fp.isdigit() or fp in kwargs:
+                    tokens.extend([lit, '{', name, conv, spec, '}'])
+                # otherwise escape the braces
+                else:
+                    tokens.extend([lit, '{{', name, conv, spec, '}}'])
+        format_string = ''.join(tokens)  # put the string back together
+        # finally call the default formatter
+        return string.Formatter.vformat(self, format_string, args, kwargs)
+
+def loadClusters(clusterNums, snapNums, zs, simName, clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/",
+                 directory = "", fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}",
+                 profileExt=".AHF_profiles", haloExt=".AHF_halos",
+                 mtreeidxExt=".AHF_mtree_idx", mtreeExt=".AHF_mtree", haloLimit=np.inf):
+    """
+    Loads multiple cluster simulations into memory.
+
+    Parameters
+    ----------
+    clusterNums : list of int
+        The list of cluster numbers to load
+    snapNums : list of int
+        The list of snapshot numbers to load from each cluster
+    zs : list of float
+        The list of redshifts corresponding to each of the snapshots in snapNums
+    simName : str
+        The name of the simulation code to be inserted into file names
+        (e.g. "GadgetX", "GadgetMUSIC")
+    directory : str, optional
+        The directory the cluster folders are in. If not specified will search
+        from current directory.
+    clusterFolderFmt : str, optional
+        The string format used to determine the names of the clusters' folders
+        Defaults to "NewMDCLUSTER_{clusterNum:0=4d}/"
+        See notes section for formatting of file strings
+    fileBaseFmt : str, optional
+        The format of the file name for the AHF files
+        Defaults to "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+            _{snap:0=3d}.z{z:.3f}"
+
+    Other Parameters
+    ----------------
+    profileExt : str, optional
+        Defaults to ".AHF_profiles"
+    haloExt : str, optional
+        Defaults to ".AHF_halos"
+    mtreeidxExt : str, optional
+        Defaults to ".AHF_mtree_idx"
+    mtreeExt : str, optional
+        Defaults to ".AHF_mtree"
+    haloLimit : int, optional
+        Specifies the maximum number of halos to load into memory
+
+    Returns
+    -------
+    clusters : list of ahfhalotools.objects.Cluster instances
+        The list of clusters corresponding to each of the clusters specified
+        in clusterNums
+
+    See Also
+    --------
+    truncateClusters : truncates files for a set of clusters
+    ahfhalotools.objects.Cluster : Stores information about a cluster
+
+    Notes
+    -----
+    The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+    formatted using the str.format method to produce the correct file names.
+    The appropriate keys are:
+        clusterNum : the number of the cluster
+        simName : the name of the simulation code
+        snap : the snapshot number
+        z : the redshift
+
+    For example, if the following set of parameters is passed into the function:
+        directory = "/home/{simName}/"
+        clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/"
+        fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+                       p_{snap:0=3d}.z{z:.3f}"
+        simName = "GadgetX"
+    With default file name extensions, when loading cluster 34, snapshot number
+    99 with z = 0.9 (for example), the following files will be opened:
+
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree
+    """
+    if not directory.endswith("/"):
+        directory += "/"
+    if not clusterFolderFmt.endswith("/"):
+        clusterFolderFmt += "/"
+
+    fmt = SafeFormatter()
+
+    clusters = []
+    for clusterNum in clusterNums:
+        fileBaseName = fmt.format(dir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        cluster = Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
+                          haloExt = haloExt, mtreeidxExt = mtreeidxExt,
+                          mtreeExt = mtreeExt, haloLimit = haloLimit,
+                          clusterNum = clusterNum, simName = simName)
+        clusters.append(cluster)
+
+    return clusters
+
+def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
+                     clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/",
+                     directory = "", fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}",
+                     profileExt=".AHF_profiles", haloExt=".AHF_halos",
+                     mtreeidxExt=".AHF_mtree_idx", mtreeExt=".AHF_mtree"):
+    """
+    Truncates files from multiple cluster folders at once
+
+    Parameters
+    ----------
+    clusterNums : list of int
+        The list of cluster numbers to load
+    snapNums : list of int
+        The list of snapshot numbers to load from each cluster
+    zs : list of float
+        The list of redshifts corresponding to each of the snapshots in snapNums
+    simName : str
+        The name of the simulation code to be inserted into file names
+        (e.g. "GadgetX", "GadgetMUSIC")
+    haloLimit : int
+        The number of halos to truncate to
+    outputDir : str
+        The directory to put the truncated files in. The file hierarchy will
+        look the same as in the original data set.
+    directory : str, optional
+        The directory the cluster folders are in. If not specified will search
+        from current directory.
+    clusterFolderFmt : str, optional
+        The string format used to determine the names of the clusters' folders
+        Defaults to "NewMDCLUSTER_{clusterNum:0=4d}/"
+        See notes section for formatting of file strings
+    fileBaseFmt : str, optional
+        The format of the file name for the AHF files
+        Defaults to "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+            _{snap:0=3d}.z{z:.3f}"
+
+    Other Parameters
+    ----------------
+    profileExt : str, optional
+        Defaults to ".AHF_profiles"
+    haloExt : str, optional
+        Defaults to ".AHF_halos"
+    mtreeidxExt : str, optional
+        Defaults to ".AHF_mtree_idx"
+    mtreeExt : str, optional
+        Defaults to ".AHF_mtree"
+
+    See Also
+    --------
+    loadClusters : loads files for a set of clusters
+    truncateFiles : truncates files for a single cluster
+    ahfhalotools.objects.Cluster : Stores information about a cluster
+
+    Notes
+    -----
+    The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+    formatted using the str.format method to produce the correct file names.
+    The appropriate keys are:
+        clusterNum : the number of the cluster
+        simName : the name of the simulation code
+        snap : the snapshot number
+        z : the redshift
+
+    For example, if the following set of parameters is passed into the function:
+        directory = "/home/{simName}/"
+        clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/"
+        fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+                       p_{snap:0=3d}.z{z:.3f}"
+        simName = "GadgetX"
+    With default file name extensions, when loading cluster 34, snapshot number
+    99 with z = 0.9 (for example), the following files will be opened:
+
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+    > /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree
+    """
+    if not directory.endswith("/"):
+        directory += "/"
+    if not clusterFolderFmt.endswith("/"):
+        clusterFolderFmt += "/"
+
+    #using safe formatter to retain unused keys
+    fmt = SafeFormatter()
+
+    for clusterNum in clusterNums:
+        #format file base name with cluster number and simulation name
+        fileBaseName = fmt.format(dir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        outputFileNameBase = fmt.format(outputDir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+
+        #truncate files for cluster
+        truncateFiles(fileBaseName,snapNums,zs,outputFileNameBase,haloLimit,
+                          haloFileExt = haloExt,profileFileExt = profileExt,
+                          mtreeidxExt = mtreeidxExt, mtreeExt = mtreeExt)
