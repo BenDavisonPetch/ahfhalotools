@@ -1,3 +1,7 @@
+"""
+Various methods useful for data processing.
+"""
+
 import numpy as np
 from astropy.cosmology import FlatLambdaCDM
 from astropy.cosmology import WMAP9

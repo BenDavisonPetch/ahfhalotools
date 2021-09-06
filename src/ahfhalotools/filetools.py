@@ -1,3 +1,8 @@
+"""
+A collection of methods useful for dealing with AHF files, including automatic
+snapshot to redshift mapping from filenames, and file truncation.
+"""
+
 import os
 import numpy as np
 from .objects import *

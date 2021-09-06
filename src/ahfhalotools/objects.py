@@ -1,3 +1,7 @@
+"""
+A collection of objects used to store and analyse AHF data.
+"""
+
 import numpy as np
 from .analysis import *
 from .filetools import *
@@ -1020,14 +1024,23 @@ class Cluster:
         values : list
             Array of values specified by quantity parameter as a function
             of time at specified radius
+
+        See Also
+        --------
+        Cluster.funcOfAgeProfileData
+        Cluster.funcOfZDeltaProfileData
+        Cluster.funcOfAgeDeltaProfileData
         """
+        if quantity.startswith("delta"):
+            return self.funcOfZDeltaProfileData(haloID,quantity[5:],radius)
         halos = self.trackHalo(haloID)
-        zs = [halo.z for halo in halos]
+        zs = np.array([halo.z for halo in halos])
         values = []
         for halo in halos:
             rs, rvals = self.funcOfRadiusProfileData(halo.ID,quantity)
             interp = np.interp(radius, rs, rvals)
             values.append(interp)
+        values = np.array(values)
         return zs, values
 
     def funcOfAgeProfileData(self, haloID, quantity, radius):
@@ -1054,17 +1067,108 @@ class Cluster:
         values : list
             Array of values specified by quantity parameter as a function
             of time at specified radius
+
+        See Also
+        --------
+        Cluster.funcOfZProfileData
+        Cluster.funcOfZDeltaProfileData
+        Cluster.funcOfAgeDeltaProfileData
         """
         zs, values = self.funcOfZProfileData(haloID,quantity,radius)
         return tfromz(zs),values
+
+    def funcOfZDeltaProfileData(self, haloID, quantity, radius):
+        """
+        Returns the time delta of a radius-dependent quantity as a function of
+        redshift, interpolated at the given radius.
+
+        To be used for quantities stored in the .AHF_profiles files.
+
+        Parameters
+        ----------
+        haloID : int
+            The full haloID of the halo to investigate at z=0.
+            e.g. 128000000000001
+        quantity : str
+            The name of the halo data piece to return
+            e.g. "M_in_r", "encDens", "gasM_in_r", etc
+            Note that the quantity should not include a "delta"
+        radius : float
+            The radius at which to interpolate the quantity specified
+
+        Returns
+        -------
+        zs : list of float
+            Array of redshifts that correspond to each of the values in
+            deltaValues
+        deltaValues : list
+            Array of values specified by quantity parameter as a function
+            of time at specified radius
+
+        See Also
+        --------
+        Cluster.funcOfZProfileData
+        Cluster.funcOfAgeProfileData
+        Cluster.funcOfAgeDeltaProfileData
+        """
+        if quantity.startswith("delta"):
+            quantity = quantity[5:]
+
+        #get redshifts and values for non-delta quantity
+        zs, values = self.funcOfZProfileData(haloID, quantity, radius)
+
+        #calculate delta values
+        deltaValues = values[1:]-values[:-1]
+        #take off highest redshift from zs (can't calculate delta quantity
+        # without an older snapshot)
+        zs = zs[1:]
+        return zs, deltaValues
+
+    def funcOfAgeDeltaProfileData(self, haloID, quantity, radius):
+        """
+        Returns the time delta of a radius-dependent quantity as a function of
+        age, interpolated at the given radius.
+
+        To be used for quantities stored in the .AHF_profiles files.
+
+        Parameters
+        ----------
+        haloID : int
+            The full haloID of the halo to investigate at z=0.
+            e.g. 128000000000001
+        quantity : str
+            The name of the halo data piece to return
+            e.g. "M_in_r", "encDens", "gasM_in_r", etc
+            Note that the quantity should not include a "delta"
+        radius : float
+            The radius at which to interpolate the quantity specified
+
+        Returns
+        -------
+        ages : list of float
+            Array of ages in Gyr that correspond to each of the values in
+            deltaValues
+        deltaValues : list
+            Array of values specified by quantity parameter as a function
+            of time at specified radius
+
+        See Also
+        --------
+        Cluster.funcOfZProfileData
+        Cluster.funcOfAgeProfileData
+        Cluster.funcOfZDeltaProfileData
+        """
+        zs, deltaValues = self.funcOfZDeltaProfileData(haloID, quantity, radius)
+        ages = tfromz(zs)
+        return ages, deltaValues
 
     def funcOfRandZProfileDataPoints(self, masterHaloID, quantity, removeZeroes = False):
         """
         Returns three 1d arrays that correspond to the coordinates of points
         with x = radius, y = redshift, z = quantity
 
-        Uses radii that appear in AHF_profiles for each snapshot. Output format
-        ideal for plot_trisurf
+        Uses radii that appear in AHF_profiles for each snapshot. Output comes
+        as triangular grid (see notes).
 
         Parameters
         ----------
@@ -1084,6 +1188,21 @@ class Cluster:
             Array of redshifts
         val : array of float
             Array of values
+
+        Notes
+        -----
+        The values returned from this function form a triangular grid, ideal for
+        plotting with using matplotlib.pyplot.triplot or
+        matplotlib.pyplot.plot_trisurf
+        The values in z and r will not form a 2D grid, as the radii for each
+        bin changes from snapshot to snapshot.
+
+        See Also
+        --------
+        matplotlib.pyplot.triplot :
+            Draw a unstructured triangular grid as lines and/or markers.
+        mpl_toolkits.mplot3d.axes3d.Axes3D.plot_trisurf :
+            Plot a triangulated surface
         """
         haloIDs = self.trackID(masterHaloID)
         rs = np.empty(0)
@@ -1125,9 +1244,9 @@ class Cluster:
 
         Returns
         -------
-        rs : list of float
+        rs : array of float
             Array of radii that correspond to values in values
-        values : list
+        values : array
             Array of values specified by quantity parameter as a function
             of radius
         """
@@ -1137,14 +1256,18 @@ class Cluster:
         values = None
         try:
             values = quantitydict[quantity]()
-        except KeyError:
-            print("INVALID QUANTITY KEY IN PROFILEDATA")
-            values = np.array([-1]*len(rs))
+        except KeyError as err:
+            message = "Invalid profile data quantity key {0}. To retrieve valid "\
+                      "profile data keys, one can call "\
+                      "Halo.getProfileQuantityDict() on a Halo instance.".format(quantity)
+            raise KeyError(message) from err
         if removeZeroes:
             #search for 0s in vals
             indexes = np.argwhere(values==0)
             values = np.delete(values, indexes)
             rs = np.delete(rs, indexes)
+        rs = np.array(rs)
+        values = np.array(values)
         return rs, values
 
     def getMergeSize(self, haloID, scheme = "halodata", fractional = True):
