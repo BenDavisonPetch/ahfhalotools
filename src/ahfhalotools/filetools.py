@@ -224,7 +224,7 @@ def getMusZs(directory=""):
                 zs.add( float(file[31:36]) )
             except ValueError:
                 pass
-
+    zs = list(zs)
     #sort list such that in descending order
     zs.sort(reverse=True)
     return zs
