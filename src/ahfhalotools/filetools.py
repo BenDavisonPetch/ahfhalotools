@@ -12,7 +12,7 @@ import string
 
 def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
                   haloFileExt = ".AHF_halos",profileFileExt = ".AHF_profiles",
-                  mtreeidxExt = ".AHF_mtree_idx", mtreeExt = ".AHF_mtree"):
+                  mtreeidxExt = ".AHF_mtree_idx", mtreeExt = ".AHF_mtree", skipmtree = False):
     """
     Truncates sets of AHF data files for a single cluster such as to shorten
     load times.
@@ -44,6 +44,9 @@ def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
         File extension to use for AHF_mtree_idx files
     mtreeExt : str, default = ".AHF_mtree"
         File extension to use for AHF_mtree files
+    skipmtree : bool, default = False
+        Whether to skip reading the .AHF_mtree file. Useful when the mtree
+        file is in the non-supported SUSSING-2013 format
 
     See Also
     --------
@@ -99,20 +102,28 @@ def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
             print("    WARNING: mtree_idx file not found")
 
         #truncate mtree file
-        try:
-            mtreerows = np.genfromtxt(fileName + mtreeExt)
-            #loop through rows to check how many rows need to be written to new file
-            haloCounter = 0
-            lineCounter = 0
-            while haloCounter < numHalos:
-                haloID, haloPart, numProg = mtreerows[lineCounter,:]
-                lineCounter += int(numProg)+1
-                haloCounter += 1
-            #lineCounter is now equal to the number of lines that we care about
-            np.savetxt(outName+mtreeExt,mtreerows[0:lineCounter,:],fmt='%d')
-            print("    mtree done")
-        except IOError:
-            print("    WARNING: mtree file not found")
+        if not skipmtree:
+            try:
+                mtreerows = np.genfromtxt(fileName + mtreeExt)
+                if len(mtreerows[0]) == 3:
+                    #non sussing format
+                    #loop through rows to check how many rows need to be written to new file
+                    haloCounter = 0
+                    lineCounter = 0
+                    while haloCounter < numHalos:
+                        haloID, haloPart, numProg = mtreerows[lineCounter,:]
+                        lineCounter += int(numProg)+1
+                        haloCounter += 1
+                    #lineCounter is now equal to the number of lines that we care about
+                    np.savetxt(outName+mtreeExt,mtreerows[0:lineCounter,:],fmt='%d')
+                    print("    mtree done")
+                else:
+                    #wrong format
+                    print("    WARNING: mtree is not correct format!")
+            except IOError:
+                print("    WARNING: mtree file not found")
+            except ValueError:
+                print("    WARNING: mtree is not of correct format! It may be in SUSSING-2013 format, which is not supported")
         print("Completed truncation: {0:.1f}%".format((i+1)/numFiles * 100))
 
 def getSnapNumToZMapGX(directory=""):
@@ -206,9 +217,14 @@ def getMusZs(directory=""):
     """
     files = os.listdir(directory)
     #assuming file name is of format GadgetMUSIC-NewMDCLUSTER_0001.z0.000...
-    zs = [float(file[31:36]) for file in files]
-    #remove duplicates
-    zs = list(set(zs))
+    zs = set()
+    for file in files:
+        if file[30] == "z":
+            try:
+                zs.add( float(file[31:36]) )
+            except ValueError:
+                pass
+
     #sort list such that in descending order
     zs.sort(reverse=True)
     return zs
@@ -347,7 +363,8 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
                      clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/",
                      directory = "", fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}",
                      profileExt=".AHF_profiles", haloExt=".AHF_halos",
-                     mtreeidxExt=".AHF_mtree_idx", mtreeExt=".AHF_mtree"):
+                     mtreeidxExt=".AHF_mtree_idx", mtreeExt=".AHF_mtree",
+                     skipmtree = False):
     """
     Truncates files from multiple cluster folders at once
 
@@ -378,6 +395,9 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
         The format of the file name for the AHF files
         Defaults to "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
             _{snap:0=3d}.z{z:.3f}"
+    skipmtree : bool, default = False
+        Whether to skip reading the .AHF_mtree file. Useful if the mtree files
+        are in the non-supported SUSSING-2013 format
 
     Other Parameters
     ----------------
@@ -427,10 +447,11 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
     if not outputDir.endswith("/"):
         outputDir += "/"
 
+    numClusters = len(clusterNums)
     #using safe formatter to retain unused keys
     fmt = SafeFormatter()
 
-    for clusterNum in clusterNums:
+    for i, clusterNum in enumerate(clusterNums):
         #format file base name with cluster number and simulation name
         fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
         outputFileNameBase = fmt.format(outputDir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
@@ -447,4 +468,6 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
         #truncate files for cluster
         truncateFiles(fileBaseName,snapNums,zs,outputFileNameBase,haloLimit,
                           haloFileExt = haloExt,profileFileExt = profileExt,
-                          mtreeidxExt = mtreeidxExt, mtreeExt = mtreeExt)
+                          mtreeidxExt = mtreeidxExt, mtreeExt = mtreeExt,
+                          skipmtree = skipmtree)
+        print("\n===CLUSTER {0} DONE===    Overall Completion: {1:.1f}%\n".format(clusterNum, (i+1)/numClusters * 100))
