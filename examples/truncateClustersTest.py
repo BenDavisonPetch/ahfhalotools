@@ -5,20 +5,19 @@ from ahfhalotools.objects import Cluster
 #define base file name for full, untruncated files
 fileNameBaseGX = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}"
 #define directory for untruncated files
-directory = "{simName}/"
+directory = "/home/nifty2014/TheThreeHundred/catalogues/AHF/{simName}/"
 #define snapshots to load
 snapNosGX = np.arange(97,129)
 
-#get snap num to redshift map (ft.getMusZs will return all redshifts present in
-# music's directory)
-rsmapGX = ft.getSnapNumToZMapGX("GadgetX/NewMDCLUSTER_0001")
+#get snap num to redshift map
+rsmapGX = ft.getSnapNumToZMapGX("/home/nifty2014/TheThreeHundred/catalogues/AHF/GadgetX/NewMDCLUSTER_0001")
 
-snapNosMus = np.arange(129-len(zsMus),129)
+#snapNosMus = np.arange(129-len(zsMus),129)
 #get redshifts from snapNos
 zsGX = np.array([rsmapGX[num] for num in snapNosGX])
 
 #define where truncated files will go
-outputDir = "GadgetXTrunc/"
+outputDir = "~/TheThreeHundred/playground/BDP/GadgetXTrunc/"
 
 ## Truncation ##
 
@@ -29,7 +28,7 @@ truncSize = 1
 clusterNums = [1,2]
 simName = "GadgetX"
 
-ft.truncateClusters(clusterNums, snapNums, zs, simName, truncSize, outputDir,
+ft.truncateClusters(clusterNums, snapNosGX, zs, simName, truncSize, outputDir,
                      directory = directory)
 
 #load clusters once we're done

@@ -140,7 +140,13 @@ def getSnapNumToZMapGX(directory=""):
     files = os.listdir(directory)
     #assuming file name is of format GadgetX-NewMDCLUSTER_0001.snap_119.z0.221...
     #returns dictionary of {snapNo:z}
-    return {int(file[31:34]):float(file[36:41]) for file in files}
+    zDict = dict()
+    for file in files:
+        try:
+            zDict[int(file[31:34])] = float(file[36:41])
+        except ValueError:
+            pass
+    return zDict
 
 def getSnapNumToZMapGiz(directory=""):
     """
@@ -167,7 +173,13 @@ def getSnapNumToZMapGiz(directory=""):
     files = os.listdir(directory)
     #assuming file name is of format GIZMO-NewMDCLUSTER_0001.snap_119.z0.221...
     #returns dictionary of {snapNo:z}
-    return {int(file[29:32]):float(file[34:39]) for file in files}
+    zDict = dict()
+    for file in files:
+        try:
+            zDict[int(file[29:32])] = float(file[34:39])
+        except ValueError:
+            pass
+    return zDict
 
 def getMusZs(directory=""):
     """
@@ -322,7 +334,7 @@ def loadClusters(clusterNums, snapNums, zs, simName, clusterFolderFmt = "NewMDCL
 
     clusters = []
     for clusterNum in clusterNums:
-        fileBaseName = fmt.format(dir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
         cluster = Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
                           haloExt = haloExt, mtreeidxExt = mtreeidxExt,
                           mtreeExt = mtreeExt, haloLimit = haloLimit,
@@ -420,8 +432,17 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
 
     for clusterNum in clusterNums:
         #format file base name with cluster number and simulation name
-        fileBaseName = fmt.format(dir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
         outputFileNameBase = fmt.format(outputDir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+
+        outputClusterDir = fmt.format(outputDir + clusterFolderFmt, clusterNum=clusterNum, simName=simName)
+        outputDirFmtted = fmt.format(outputDir, clusterNum=clusterNum, simName=simName)
+
+        #check if output files exist already, if not create them
+        if not os.path.isdir(outputDirFmtted):
+            os.mkdir(outputDirFmtted)
+        if not os.path.isdir(outputClusterDir):
+            os.mkdir(outputClusterDir)
 
         #truncate files for cluster
         truncateFiles(fileBaseName,snapNums,zs,outputFileNameBase,haloLimit,
