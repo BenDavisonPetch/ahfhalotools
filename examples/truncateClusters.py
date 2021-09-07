@@ -47,7 +47,8 @@ print("====== GadgetMUSIC Truncation ======")
 print("====================================\n")
 
 ft.truncateClusters(clusterNums, snapNos, zsMus, "GadgetMUSIC", truncSize, outputDir,
-                     directory = directory, skipmtree = True)
+                     directory = directory, skipmtree = True,
+                     fileBaseFmt = fileNameBaseMus)
 
 print("\n\n")
 print("==============================")
