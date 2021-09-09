@@ -21,7 +21,7 @@ AHFHaloTools is a Python 3 library for the analysis of data produced by AMIGA's 
 
 ## Usage
 The majority of analysis is enabled by the `ahfhalotools.objects.Cluster` object.
-Example analysis scripts are available in `/examples`.
+Example analysis and truncation scripts are available in `/examples`.
 
 ## AHF documentation
 For information on AMIGA's Halo Finder, including documentation and output file formats, you can visit their website [here](http://popia.ft.uam.es/AHF/Download.html).
