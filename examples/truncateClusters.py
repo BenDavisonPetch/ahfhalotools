@@ -57,11 +57,11 @@ print("================================")
 print("====== GadgetX Truncation ======")
 print("================================\n")
 # cluster 10 for GadgetX appears to be missing snapshot 100 so will be absent
-# cluster 86 also has something weird in the data so we'll skip that too
+# cluster 86 also has something weird in the data so will be skipped too
 ft.truncateClusters(clusterNums, snapNos, "GadgetX", truncSize, outputDir,
                     directory = directory, skipmtree = True)
 
 
 #load gadget X clusters once we're done to check it works
-clusters = ft.loadClusters([1], snapNos, "GadgetX", directory = directory)
+clusters = ft.loadClusters(clusterNums, snapNos, "GadgetX", directory = outputDir)
 print(clusters)

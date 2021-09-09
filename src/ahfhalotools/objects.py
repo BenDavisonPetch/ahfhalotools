@@ -585,7 +585,8 @@ class Cluster:
     """
     def __init__(self, fileBaseName, snapNums, zs, profileExt=".AHF_profiles",
             haloExt=".AHF_halos",mtreeidxExt=".AHF_mtree_idx",
-            mtreeExt=".AHF_mtree", haloLimit=np.inf, clusterNum = 0, simName = ""):
+            mtreeExt=".AHF_mtree", haloLimit=np.inf, clusterNum = 0,
+            simName = "", skipmtree = False):
         """
         Initialises the cluster object from .AHF_profiles and .AHF_halos files
 
@@ -611,6 +612,10 @@ class Cluster:
         simName : str, optional
             Specifies the name of the simulation used to create the cluster
             Defaults to ""
+        skipmtree : bool, optional
+            Whether or not to skip trying to read the merger tree. If False and
+            no mtree file is present, funcation will just print out a warning.
+            Defaults to false
 
         Notes
         -----
@@ -723,27 +728,28 @@ class Cluster:
             #   HaloID(1)   HaloPart(2)  NumProgenitors(3)
             #      SharedPart(1)    HaloID(2)   HaloPart(3)
             #note: mtree includes the father
-            try:
-                mtreerows = np.genfromtxt(mtreeFile)
-            except IOError:
-                print("WARNING: File {0} not found, relevant data cannot be loaded".format(mtreeFile))
-                mtreerows = []
-            lineIndex = 0
-            fileLength = len(mtreerows)
+            if not skipmtree:
+                try:
+                    mtreerows = np.genfromtxt(mtreeFile)
+                except IOError:
+                    print("WARNING: File {0} not found, relevant data cannot be loaded".format(mtreeFile))
+                    mtreerows = []
+                lineIndex = 0
+                fileLength = len(mtreerows)
 
-            while lineIndex < fileLength-1:
-                haloID, nPart, numProg = mtreerows[lineIndex,:]
+                while lineIndex < fileLength-1:
+                    haloID, nPart, numProg = mtreerows[lineIndex,:]
 
-                progenitorList = []
-                #loop through progenitor lines
-                for i in range(lineIndex+1,lineIndex+int(numProg)+1):
-                    sharedPart, progenitorID, prognPart = mtreerows[i,:]
-                    progenitorList.append([int(sharedPart),int(progenitorID),int(prognPart)])
+                    progenitorList = []
+                    #loop through progenitor lines
+                    for i in range(lineIndex+1,lineIndex+int(numProg)+1):
+                        sharedPart, progenitorID, prognPart = mtreerows[i,:]
+                        progenitorList.append([int(sharedPart),int(progenitorID),int(prognPart)])
 
-                #add list of projenitor dictionaries to _progDict
-                self._progDict[haloID] = np.array(progenitorList)
-                #move line index to next child line
-                lineIndex += int(numProg) + 1
+                    #add list of projenitor dictionaries to _progDict
+                    self._progDict[haloID] = np.array(progenitorList)
+                    #move line index to next child line
+                    lineIndex += int(numProg) + 1
 
 
     def getHalo(self, haloID):

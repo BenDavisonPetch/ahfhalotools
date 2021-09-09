@@ -339,7 +339,8 @@ class SafeFormatter(string.Formatter):
 def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/",
                  directory = "", fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}",
                  profileExt=".AHF_profiles", haloExt=".AHF_halos",
-                 mtreeidxExt=".AHF_mtree_idx", mtreeExt=".AHF_mtree", haloLimit=np.inf):
+                 mtreeidxExt=".AHF_mtree_idx", mtreeExt=".AHF_mtree", haloLimit=np.inf,
+                 printProgress = False, skipmtree = False):
     """
     Loads multiple cluster simulations into memory.
 
@@ -378,6 +379,13 @@ def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = "NewMDCLUSTE
         Defaults to ".AHF_mtree"
     haloLimit : int, optional
         Specifies the maximum number of halos to load into memory
+    skipmtree : bool, optional
+        Defaults to False
+        If True, will skip trying to read mtree files, avoiding the warning
+        message spam if no mtree files are present.
+    printProgress : bool, optional
+        Defaults to False
+        If True, will print updates on loading progress
 
     Returns
     -------
@@ -420,9 +428,11 @@ def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = "NewMDCLUSTE
         clusterFolderFmt += "/"
 
     fmt = SafeFormatter()
+    numClusters = len(clusterNums)
 
     clusters = []
-    for clusterNum in clusterNums:
+    for i, clusterNum in enumerate(clusterNums):
+
         #input relevant fields for file names
         inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
         fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
@@ -435,12 +445,21 @@ def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = "NewMDCLUSTE
         #get redshifts in folder
         zs = getZs(inputDir, num = len(snapNums))
 
+        #check if folder is empty
+        if len(zs) == 0:
+            print("WARNING: Non-existent cluster data:\n{0}".format(inputDir))
+            continue
+
         cluster = Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
                           haloExt = haloExt, mtreeidxExt = mtreeidxExt,
                           mtreeExt = mtreeExt, haloLimit = haloLimit,
-                          clusterNum = clusterNum, simName = simName)
+                          clusterNum = clusterNum, simName = simName,
+                          skipmtree = skipmtree)
         clusters.append(cluster)
-
+        if printProgress:
+            print("Loaded {0} cluster {1:0=4d}: {2:.1f}%".format(simName,clusterNum,(i+1)/numClusters * 100))
+    if printProgress:
+        print("\nLoading for {0} complete.\n".format(simName))
     return clusters
 
 def truncateClusters(clusterNums, snapNums, simName, haloLimit, outputDir,
