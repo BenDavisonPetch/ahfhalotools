@@ -426,7 +426,12 @@ def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = "NewMDCLUSTE
         #input relevant fields for file names
         inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
         fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
-
+        #check if cluster directory exists, if not the cluster may have been
+        #skipped during truncation, so we skip loading cluster and print a
+        #warning
+        if not os.path.isdir(inputDir):
+            print("WARNING: Non-existent cluster data:\n{0}".format(inputDir))
+            continue
         #get redshifts in folder
         zs = getZs(inputDir, num = len(snapNums))
 
@@ -548,8 +553,13 @@ def truncateClusters(clusterNums, snapNums, simName, haloLimit, outputDir,
             os.mkdir(outputClusterDir)
 
         #truncate files for cluster
-        truncateFiles(fileBaseName,snapNums,zs,outputFileNameBase,haloLimit,
-                          haloFileExt = haloExt,profileFileExt = profileExt,
-                          mtreeidxExt = mtreeidxExt, mtreeExt = mtreeExt,
-                          skipmtree = skipmtree)
-        print("\n===CLUSTER {0} DONE===    Overall Completion: {1:.1f}%\n".format(clusterNum, (i+1)/numClusters * 100))
+        try:
+            truncateFiles(fileBaseName,snapNums,zs,outputFileNameBase,haloLimit,
+                              haloFileExt = haloExt,profileFileExt = profileExt,
+                              mtreeidxExt = mtreeidxExt, mtreeExt = mtreeExt,
+                              skipmtree = skipmtree)
+            print("\n===CLUSTER {0} DONE===    Overall Completion: {1:.1f}%\n".format(clusterNum, (i+1)/numClusters * 100))
+        except OSError:
+            print("\n\n===WARNING===\nAn error was encountered while reading the"\
+                  " data from Cluster {0}. Cluster will be skipped. Be sure to "\
+                  "check your data!\n\n".format(clusterNum))
