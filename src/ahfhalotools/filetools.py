@@ -233,7 +233,7 @@ def getMusZs(directory=""):
     zs.sort(reverse=True)
     return zs
 
-def getZfromFileName(fileName):
+def getZfromFileName(fileName, suppress = False):
     """
     Lifts a redshift from a file name.
 
@@ -243,6 +243,9 @@ def getZfromFileName(fileName):
     Parameters
     ----------
     fileName : str
+    suppress : bool, default = False
+        Whether or not to suppress error messages. If no single redshift is
+        found and suppress is True, will return None
 
     Returns
     -------
@@ -259,10 +262,16 @@ def getZfromFileName(fileName):
             pass
     if len(zs) == 0:
         msg = "Could not find a redshift in file name {0}\nPlease check the name is formatted as '...zX.XXX...'".format(fileName)
-        raise ValueError(msg)
-    if len(zs) > 1:
+        if not suppress:
+            raise ValueError(msg)
+        else:
+            return
+    elif len(zs) > 1:
         msg = "Found multiple redshifts in file name {0}".format(fileName)
-        raise ValueError(msg)
+        if not suppress:
+            raise ValueError(msg)
+        else:
+            return
     return zs[0]
 
 def getZs(directory, num = -1):
@@ -285,15 +294,11 @@ def getZs(directory, num = -1):
     """
     #get list of all redshifts in folder
     files = os.listdir(directory)
-    zs = list(set([getZfromFileName(file) for file in files]))
+    zs = list(set([getZfromFileName(file, suppress = True) for file in files if getZfromFileName(file, suppress = True) != None]))
     zs.sort(reverse=True)
     #we want redshifts in descending order as snapNos should be ascending
     #only want num redshifts if specified
-    if num != -1:
-        if num > len(zs):
-            msg = "more redshifts were asked for than the number found in directory {0}"\
-                  "\n{1} redshifts were found, and {2} were requested".format(directory,len(zs),num)
-            raise ValueError(msg)
+    if num != -1 and not num > len(zs):
         zs = zs[-num:]
     return zs
 

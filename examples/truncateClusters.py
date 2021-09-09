@@ -34,8 +34,13 @@ clusterNums = np.arange(1,325)
 print("====================================")
 print("====== GadgetMUSIC Truncation ======")
 print("====================================\n")
-
-ft.truncateClusters(clusterNums, snapNos, "GadgetMUSIC", truncSize, outputDir,
+# N.B. for GadgetMUSIC data, for some reason, for cluster numbers 22 and above,
+# there are only 17 snapshots. The snapshots with redshift less than one are
+# 7-17, so we truncate these separately.
+ft.truncateClusters(np.arange(1,22), snapNos, "GadgetMUSIC", truncSize, outputDir,
+                     directory = directory, skipmtree = True,
+                     fileBaseFmt = fileNameBaseMus)
+ft.truncateClusters(np.arange(22,325), np.arange(7,18), "GadgetMUSIC", truncSize, outputDir,
                      directory = directory, skipmtree = True,
                      fileBaseFmt = fileNameBaseMus)
 
