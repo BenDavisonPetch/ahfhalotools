@@ -16,20 +16,9 @@ fileNameBaseGiz = fileNameBaseGX
 fileNameBaseMus = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.z{z:.3f}"
 #define directory for untruncated files
 directory = "/home/nifty2014/TheThreeHundred/catalogues/AHF/{simName}/"
-#define snapshots to load
+
+#define snapshots to use
 snapNos = np.arange(97,129)
-
-#get snap num to redshift map
-rsmapGX = ft.getSnapNumToZMapGX("/home/nifty2014/TheThreeHundred/catalogues/AHF/GadgetX/NewMDCLUSTER_0001")
-rsmapGiz = ft.getSnapNumToZMapGiz("/home/nifty2014/TheThreeHundred/catalogues/AHF/GIZMO/NewMDCLUSTER_0001")
-
-#get redshifts from snapNos
-zsGX = np.array([rsmapGX[num] for num in snapNos])
-zsGiz = np.array([rsmapGiz[num] for num in snapNos])
-#have to get redshifts of music snaps directly from directory. We only want the
-# last len(snapNos) entries
-zsMus = ft.getMusZs("/home/nifty2014/TheThreeHundred/catalogues/AHF/GadgetMUSIC/NewMDCLUSTER_0001")[-len(snapNos):]
-assert(len(zsGX)==len(zsGiz)==len(zsMus))
 
 #define where truncated files will go
 outputDir = "/home/nifty2014/TheThreeHundred/playground/BDP/TruncData/{simName}"
@@ -46,7 +35,7 @@ print("====================================")
 print("====== GadgetMUSIC Truncation ======")
 print("====================================\n")
 
-ft.truncateClusters(clusterNums, snapNos, zsMus, "GadgetMUSIC", truncSize, outputDir,
+ft.truncateClusters(clusterNums, snapNos, "GadgetMUSIC", truncSize, outputDir,
                      directory = directory, skipmtree = True,
                      fileBaseFmt = fileNameBaseMus)
 
@@ -55,17 +44,18 @@ print("==============================")
 print("====== GIZMO Truncation ======")
 print("==============================\n")
 
-ft.truncateClusters(clusterNums, snapNos, zsGiz, "GIZMO", truncSize, outputDir,
+ft.truncateClusters(clusterNums, snapNos, "GIZMO", truncSize, outputDir,
                      directory = directory, skipmtree = True)
 
 print("\n\n")
 print("================================")
 print("====== GadgetX Truncation ======")
 print("================================\n")
-ft.truncateClusters(clusterNums, snapNos, zsGX, "GadgetX", truncSize, outputDir,
+
+ft.truncateClusters(clusterNums, snapNos, "GadgetX", truncSize, outputDir,
                      directory = directory, skipmtree = True)
 
 
 #load gadget X clusters once we're done to check it works
-clusters = ft.loadClusters(clusterNums, snapNos, zsGX, "GadgetX", directory = outputDir)
+clusters = ft.loadClusters([1], snapNos, "GadgetX", directory = directory)
 print(clusters)

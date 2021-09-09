@@ -448,8 +448,18 @@ class Snapshot:
         self.__profileFile__ = profileFile
 
         '''--- read in from files specified ---'''
-        halorows = np.genfromtxt(haloFile)
-        profilerows = np.genfromtxt(profileFile)
+        if haloLimit == -1:
+            halorows = np.genfromtxt(haloFile)
+            profilerows = np.genfromtxt(profileFile)
+        else:
+            halorows = np.genfromtxt(haloFile, max_rows = haloLimit)
+            if halorows.ndim == 1:
+                #make sure halorows is a 2D array (happens if numHalos = 1)
+                halorows = np.array([halorows])
+
+            numProfileRows = int(halorows[:,36].sum())
+            profilerows = np.genfromtxt(profileFile, max_rows = numProfileRows)
+
         halos = []
 
         profileRowCounter = 0
@@ -650,6 +660,13 @@ class Cluster:
             halorows = np.genfromtxt(haloFile)
             profilerows = np.genfromtxt(profileFile)
 
+            #check if files are just 1 row and if so convert them to correct
+            # data type (2D array)
+            if halorows.ndim == 1:
+                halorows = np.array([halorows])
+            if profilerows.ndim == 1:
+                profilerows = np.array([profilerows])
+
             profileRowCounter = 0
             haloCounter = 0
 
@@ -687,6 +704,10 @@ class Cluster:
             #mtree_idx file is formatted as childID fatherID
             try:
                 idxrows = np.genfromtxt(mtreeidxFile)
+                #check if idxrows is 1 row and if so convert it to correct
+                # data type (2D array)
+                if idxrows.ndim == 1:
+                    idxrows = np.array([idxrows])
             except IOError:
                 print("WARNING: File {0} not found, relevant data cannot be loaded".format(mtreeidxFile))
                 idxrows = []

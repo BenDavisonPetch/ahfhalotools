@@ -95,8 +95,12 @@ def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
 
         #truncate mtree_idx file
         try:
-            mtreeidxrows = np.genfromtxt(fileName + mtreeidxExt)
-            np.savetxt(outName + mtreeidxExt,mtreeidxrows[:numHalos,:],fmt='%d')
+            mtreeidxrows = np.genfromtxt(fileName + mtreeidxExt, max_rows = numHalos)
+
+            #check if mtreeidxrows is 1D and make it 2D if so
+            if mtreeidxrows.ndim == 1:
+                mtreeidxrows = np.array([mtreeidxrows])
+            np.savetxt(outName + mtreeidxExt,mtreeidxrows,fmt='%d')
             print("    mtree_idx done")
         except IOError:
             print("    WARNING: mtree_idx file not found")
@@ -229,6 +233,70 @@ def getMusZs(directory=""):
     zs.sort(reverse=True)
     return zs
 
+def getZfromFileName(fileName):
+    """
+    Lifts a redshift from a file name.
+
+    Assumes file names are formatted as "...zX.XXX..." where X.XXX is the
+    redshift.
+
+    Parameters
+    ----------
+    fileName : str
+
+    Returns
+    -------
+    z : float
+    """
+    #first we find where all of the "z" characters are in the name
+    zIndexes = [pos for pos, char in enumerate(fileName) if char == 'z']
+    zs = list()
+    for zIndex in zIndexes:
+        try:
+            zs.append( float(fileName[zIndex+1:zIndex+6]) )
+        except ValueError:
+            #bit of string after the z is not a number
+            pass
+    if len(zs) == 0:
+        msg = "Could not find a redshift in file name {0}\nPlease check the name is formatted as '...zX.XXX...'".format(fileName)
+        raise ValueError(msg)
+    if len(zs) > 1:
+        msg = "Found multiple redshifts in file name {0}".format(fileName)
+        raise ValueError(msg)
+    return zs[0]
+
+def getZs(directory, num = -1):
+    """
+    Gets the redshifts of the snapshot files in a folder in descending order
+
+    Parameters
+    ----------
+    directory : str
+        The directory to search
+    num : int, optional
+        Specifies how many redshifts to return. Will return the first num
+        redshifts starting from redshift 0
+        If not specified will return all redshifts found
+
+    Returns
+    -------
+    zs : list of float
+        The redshifts of the files in the directory in descending order.
+    """
+    #get list of all redshifts in folder
+    files = os.listdir(directory)
+    zs = list(set([getZfromFileName(file) for file in files]))
+    zs.sort(reverse=True)
+    #we want redshifts in descending order as snapNos should be ascending
+    #only want num redshifts if specified
+    if num != -1:
+        if num > len(zs):
+            msg = "more redshifts were asked for than the number found in directory {0}"\
+                  "\n{1} redshifts were found, and {2} were requested".format(directory,len(zs),num)
+            raise ValueError(msg)
+        zs = zs[-num:]
+    return zs
+
 class SafeFormatter(string.Formatter):
     """
     A string formatter used to preserve unused keys.
@@ -263,7 +331,7 @@ class SafeFormatter(string.Formatter):
         # finally call the default formatter
         return string.Formatter.vformat(self, format_string, args, kwargs)
 
-def loadClusters(clusterNums, snapNums, zs, simName, clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/",
+def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/",
                  directory = "", fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}",
                  profileExt=".AHF_profiles", haloExt=".AHF_halos",
                  mtreeidxExt=".AHF_mtree_idx", mtreeExt=".AHF_mtree", haloLimit=np.inf):
@@ -275,9 +343,9 @@ def loadClusters(clusterNums, snapNums, zs, simName, clusterFolderFmt = "NewMDCL
     clusterNums : list of int
         The list of cluster numbers to load
     snapNums : list of int
-        The list of snapshot numbers to load from each cluster
-    zs : list of float
-        The list of redshifts corresponding to each of the snapshots in snapNums
+        The list of snapshot numbers to load from each cluster in _ascending_
+        order. Should not contain any breaks and should include the snapshot
+        with z = 0.000
     simName : str
         The name of the simulation code to be inserted into file names
         (e.g. "GadgetX", "GadgetMUSIC")
@@ -350,7 +418,13 @@ def loadClusters(clusterNums, snapNums, zs, simName, clusterFolderFmt = "NewMDCL
 
     clusters = []
     for clusterNum in clusterNums:
+        #input relevant fields for file names
+        inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
         fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+
+        #get redshifts in folder
+        zs = getZs(inputDir, num = len(snapNums))
+
         cluster = Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
                           haloExt = haloExt, mtreeidxExt = mtreeidxExt,
                           mtreeExt = mtreeExt, haloLimit = haloLimit,
@@ -359,7 +433,7 @@ def loadClusters(clusterNums, snapNums, zs, simName, clusterFolderFmt = "NewMDCL
 
     return clusters
 
-def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
+def truncateClusters(clusterNums, snapNums, simName, haloLimit, outputDir,
                      clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/",
                      directory = "", fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}",
                      profileExt=".AHF_profiles", haloExt=".AHF_halos",
@@ -373,9 +447,9 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
     clusterNums : list of int
         The list of cluster numbers to load
     snapNums : list of int
-        The list of snapshot numbers to load from each cluster
-    zs : list of float
-        The list of redshifts corresponding to each of the snapshots in snapNums
+        The list of snapshot numbers to load from each cluster in _ascending_
+        order. Should not contain any breaks and should include the snapshot
+        with z = 0.000
     simName : str
         The name of the simulation code to be inserted into file names
         (e.g. "GadgetX", "GadgetMUSIC")
@@ -453,11 +527,14 @@ def truncateClusters(clusterNums, snapNums, zs, simName, haloLimit, outputDir,
 
     for i, clusterNum in enumerate(clusterNums):
         #format file base name with cluster number and simulation name
+        inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
         fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
         outputFileNameBase = fmt.format(outputDir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
 
         outputClusterDir = fmt.format(outputDir + clusterFolderFmt, clusterNum=clusterNum, simName=simName)
         outputDirFmtted = fmt.format(outputDir, clusterNum=clusterNum, simName=simName)
+
+        zs = getZs(inputDir, num = len(snapNums))
 
         #check if output files exist already, if not create them
         if not os.path.isdir(outputDirFmtted):
