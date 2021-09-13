@@ -4,6 +4,9 @@ from ahfhalotools.objects import Cluster
 from astropy.cosmology import FlatLambdaCDM
 from astropy.cosmology import WMAP9
 from astropy import units as au
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
 
 #define base file name for full, untruncated files
 fileNameBaseGX = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}"
@@ -22,7 +25,7 @@ truncSize = 1
 
 #cluster numbers
 #clusterNums = np.arange(1,325)
-clusterNums = np.arange(1,5)
+clusterNums = np.arange(1,50)
 
 # N.B. for GadgetMUSIC data, for some reason, for cluster numbers 22 and above,
 # there are only 17 snapshots. The snapshots with redshift less than one are
@@ -33,12 +36,25 @@ clusterNums = np.arange(1,5)
 #                                directory = directory,
 #                                fileBaseFmt = fileNameBaseMus,
 #                                printProgress = True, skipmtree = True)
+
 # #up to 17
 # musClusters2 = ft.loadClusters(np.arange(22,325), np.arange(7,18), "GadgetMUSIC",
 #                                directory = directory,
 #                                fileBaseFmt = fileNameBaseMus,
 #                                printProgress = True, skipmtree = True)
 #
+
+# TODO: change back cluster loading for all of them
+musClusters1 = ft.loadClusters(np.arange(1,22), snapNos, "GadgetMUSIC",
+                               directory = directory,
+                               fileBaseFmt = fileNameBaseMus,
+                               printProgress = True, skipmtree = True)
+
+musClusters2 = ft.loadClusters(np.arange(22,25), np.arange(7,18), "GadgetMUSIC",
+                               directory = directory,
+                               fileBaseFmt = fileNameBaseMus,
+                               printProgress = True, skipmtree = True)
+
 gizClusters = ft.loadClusters(clusterNums, snapNos, "GIZMO",
                               directory = directory, printProgress = True,
                               skipmtree = True)
@@ -47,7 +63,7 @@ gxClusters = ft.loadClusters(clusterNums, snapNos, "GadgetX",
                              directory = directory, printProgress = True,
                              skipmtree = True)
 
-## ------------ PLOT ------------- ##
+## done loading data
 # local density over critical density vs r/Rvir at z=0
 
 # get critical density at z=0 using parameters from simulations
@@ -71,4 +87,79 @@ ovdens = ovdens * flcdm.h**2 / rhoCrit.value
 #get ovdens column from .AHF_profiles
 r, ovdens2 = gxClusters[0].funcOfRadiusProfileData(128000000000001,4)
 print(ovdens2/ovdens) # should be an array of (close to) 1s
-print(flcdm.Ob(0))
+
+## ------------ PLOT ------------- ##
+haloID = 128000000000001
+## parameters for colouring by dynamic state
+dsquantity = "com_offset"
+dsquantityLabel = "com offset / kpc/h"
+colormap = cm.cividis
+
+# sets of clusters
+clustersSet = [gxClusters, gizClusters, musClusters1]
+clustersNames = ["GadgetX", "GIZMO", "GadgetMUSIC"]
+
+for i, clusters in enumerate(clustersSet):
+    widths = [1,1,1,0.1]
+    gs_kw = dict(width_ratios=widths)
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize = (12,6), gridspec_kw = gs_kw, sharey='col')
+
+    # get dynamical states and get color map ready
+    dynstates = np.array([cluster.getHaloData(haloID,dsquantity) for cluster in clusters])
+    normalize = mcolors.Normalize(vmin=dynstates.min(),vmax=dynstates.max())
+    scalarmappable = cm.ScalarMappable(norm=normalize, cmap=colormap)
+    scalarmappable.set_array(dynstates)
+
+    for cluster in clusters:
+        # get r and density and normalise
+        #    total mass:
+        r, dens = cluster.funcOfRadiusProfileData(haloID,"locDens", removeZeroes=True)
+        dens = dens * flcdm.h**2 / rhoCrit.value
+        r = abs(r / cluster.getHaloData(haloID, "Rvir"))
+
+        #    stellar mass:
+        rs, starDens = cluster.funcOfRadiusProfileData(haloID,"starLocDens", removeZeroes=True)
+        starDens = starDens * flcdm.h**2 / rhoCrit.value
+        rs = abs(rs / cluster.getHaloData(haloID, "Rvir"))
+
+        #    gas mass:
+        rg, gasDens = cluster.funcOfRadiusProfileData(haloID,"gasLocDens", removeZeroes=True)
+        gasDens = gasDens * flcdm.h**2 / rhoCrit.value
+        rg = abs(rg / cluster.getHaloData(haloID, "Rvir"))
+
+        # get dynamical state
+        dstate = cluster.getHaloData(haloID, dsquantity)
+
+        alpha = 0.7
+        ax1.plot(r,dens,color=colormap(normalize(dstate)), alpha = alpha)
+        ax2.plot(rs,starDens,color=colormap(normalize(dstate)), alpha = alpha)
+        ax3.plot(rg,gasDens,color=colormap(normalize(dstate)), alpha = alpha)
+
+    # add colorbar
+    cbar1 = fig.colorbar(scalarmappable, cax = ax4)
+    cbar1.set_label(dsquantityLabel)
+
+    #label everything
+    fig.suptitle("Local Density vs Radius at z = 0 for central clusters ({0})".format(clustersNames[i]))
+
+    ax1.set_title("Local Total Mass Density")
+    ax1.set_xlabel("$r \\; / \\; r_{200}$")
+    ax1.set_ylabel("$\\rho \\; / \\; \\rho_{crit}$")
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+
+    ax2.set_title("Local Stellar Density")
+    ax2.set_xlabel("$r \\; / \\; r_{200}$")
+    ax2.set_ylabel("$\\rho_{star} \\; / \\; \\rho_{crit}$")
+    ax2.set_xscale('log')
+    ax2.set_yscale('log')
+
+    ax3.set_title("Local Gas Density")
+    ax3.set_xlabel("$r \\; / \\; r_{200}$")
+    ax3.set_ylabel("$\\rho_{gas} \\; / \\; \\rho_{crit}$")
+    ax3.set_xscale('log')
+    ax3.set_yscale('log')
+
+    plt.tight_layout()
+
+plt.show()
