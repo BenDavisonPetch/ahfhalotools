@@ -14,7 +14,9 @@ fileNameBaseGX = "GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
 fileNameBaseGiz = "GIZMO-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
 fileNameBaseMus = "GadgetMUSIC-NewMDCLUSTER_0001.z{z:.3f}"
 #define directory
-gxdir = "gadgetX\\"
+#this is where the untruncated files are, just for the purposes of getting the
+# snapshot number to z map
+gxdir = "GadgetX\\NewMDCLUSTER_0001\\"
 gizdir = "gizmo\\"
 musdir = "music\\"
 #define snapshots to load

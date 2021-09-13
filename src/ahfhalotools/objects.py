@@ -288,7 +288,20 @@ class Halo:
         -------
         volumes : array of dtype float
         """
-        return abs(4/3*np.pi*(self.radii()**3))
+        return abs((4/3)*np.pi*(self.radii()**3))
+
+    def shellvolumes(self):
+        """
+        Returns an array containing the volumes of each profile *shell* (ie
+        the volume between the current radius and the previous radius)
+
+        Returns
+        -------
+        shellvolumes : array of dtype float
+        """
+        vols = self.volumes()
+        shellvols = vols - np.append([0], vols[:-1])
+        return shellvols
 
     def encDensities(self):
         """
@@ -315,7 +328,7 @@ class Halo:
         dens : array of dtype float
         """
         shellMass = self.M_in_shell()
-        volumes = self.volumes()
+        volumes = self.shellvolumes()
         return shellMass/volumes
         #return self.profiles[:,4]
 
@@ -344,7 +357,7 @@ class Halo:
         dens : array of dtype float
         """
         shellMass = self.gasM_in_shell()
-        volumes = self.volumes()
+        volumes = self.shellvolumes()
         return shellMass/volumes
         #return self.profiles[:,4]
 
@@ -373,7 +386,7 @@ class Halo:
         dens : array of dtype float
         """
         shellMass = self.starM_in_shell()
-        volumes = self.volumes()
+        volumes = self.shellvolumes()
         return shellMass/volumes
 
     def intEnergies(self):
@@ -1057,8 +1070,11 @@ class Cluster:
             The full haloID of the halo to investigate at z=0.
             e.g. 128000000000001
         quantity : str
-            The name of the halo data piece to return
+            The name of the profile data piece to return
             e.g. "M_in_r", "encDens", "gasM_in_r", etc
+            Can alternatively be an integer that represents the index of a
+            profile data piece (eg for Ly in column (10), can give quantity = 9)
+            Note this is zero indexed.
         radius : float
             The radius at which to interpolate the quantity specified
 
@@ -1076,7 +1092,7 @@ class Cluster:
         Cluster.funcOfZDeltaProfileData
         Cluster.funcOfAgeDeltaProfileData
         """
-        if quantity.startswith("delta"):
+        if type(quantity) == type(str()) and quantity.startswith("delta"):
             return self.funcOfZDeltaProfileData(haloID,quantity[5:],radius)
         halos = self.trackHalo(haloID)
         zs = np.array([halo.z for halo in halos])
@@ -1100,8 +1116,11 @@ class Cluster:
             The full haloID of the halo to investigate at z=0.
             e.g. 128000000000001
         quantity : str
-            The name of the halo data piece to return
+            The name of the profile data piece to return
             e.g. "M_in_r", "encDens", "gasM_in_r", etc
+            Can alternatively be an integer that represents the index of a
+            profile data piece (eg for Ly in column (10), can give quantity = 9)
+            Note this is zero indexed.
         radius : float
             The radius at which to interpolate the quantity specified
 
@@ -1138,6 +1157,9 @@ class Cluster:
             The name of the halo data piece to return
             e.g. "M_in_r", "encDens", "gasM_in_r", etc
             Note that the quantity should not include a "delta"
+            Can alternatively be an integer that represents the index of a
+            profile data piece (eg for Ly in column (10), can give quantity = 9)
+            Note this is zero indexed.
         radius : float
             The radius at which to interpolate the quantity specified
 
@@ -1156,7 +1178,7 @@ class Cluster:
         Cluster.funcOfAgeProfileData
         Cluster.funcOfAgeDeltaProfileData
         """
-        if quantity.startswith("delta"):
+        if type(quantity) == type(str()) and quantity.startswith("delta"):
             quantity = quantity[5:]
 
         #get redshifts and values for non-delta quantity
@@ -1185,6 +1207,9 @@ class Cluster:
             The name of the halo data piece to return
             e.g. "M_in_r", "encDens", "gasM_in_r", etc
             Note that the quantity should not include a "delta"
+            Can alternatively be an integer that represents the index of a
+            profile data piece (eg for Ly in column (10), can give quantity = 9)
+            Note this is zero indexed.
         radius : float
             The radius at which to interpolate the quantity specified
 
@@ -1221,7 +1246,7 @@ class Cluster:
             The full haloID of the halo being investigated in the *oldest*
             snapshot of interest
         quantity : str
-            The name of the profile data piece to use
+            The name or column index of the profile data piece to use
         removeZeroes : bool
             Whether or not to remove points where the z value is 0. Default = False
 
@@ -1284,6 +1309,9 @@ class Cluster:
         quantity : str
             The name of the halo data piece to return
             e.g. "M_in_r", "encDens", "gasM_in_r", etc
+            Can alternatively be an integer that represents the index of a
+            profile data piece (eg for Ly in column (10), can give quantity = 9)
+            Note this is zero indexed.
         removeZeroes : bool, default = False
             If True will remove any entries where the value of {quantity} is 0
 
@@ -1297,15 +1325,22 @@ class Cluster:
         """
         halo = self.getHalo(haloID)
         rs = halo.radii()
-        quantitydict = halo.getProfileQuantityDict()
-        values = None
-        try:
-            values = quantitydict[quantity]()
-        except KeyError as err:
-            message = "Invalid profile data quantity key {0}. To retrieve valid "\
-                      "profile data keys, one can call "\
-                      "Halo.getProfileQuantityDict() on a Halo instance.".format(quantity)
-            raise KeyError(message) from err
+
+        if type(quantity) == type(int()):
+            #have passed an index rather than a string key
+            values = halo.profiles[:,quantity]
+        else:
+            quantitydict = halo.getProfileQuantityDict()
+            values = None
+            try:
+                values = quantitydict[quantity]()
+            except KeyError as err:
+                message = "Invalid profile data quantity key {0}. To retrieve valid "\
+                          "profile data keys, one can call "\
+                          "Halo.getProfileQuantityDict() on a Halo instance, or use"\
+                          " the quantity's column index (eg for Ly in column (10), "\
+                          "can give quantity = 9)".format(quantity)
+                raise KeyError(message) from err
         if removeZeroes:
             #search for 0s in vals
             indexes = np.argwhere(values==0)

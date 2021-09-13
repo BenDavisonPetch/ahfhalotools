@@ -12,7 +12,7 @@ fileNameBaseGX = "GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
 fileNameBaseGiz = "GIZMO-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
 fileNameBaseMus = "GadgetMUSIC-NewMDCLUSTER_0001.z{z:.3f}"
 #define directory
-gxdir = "gadgetX\\"
+gxdir = "GadgetX\\NewMDCLUSTER_0001\\"
 gizdir = "gizmo\\"
 musdir = "music\\"
 #define snapshots to load
@@ -65,7 +65,7 @@ for i in range(3):
         cluster = clusters[j]
 
         ## can get delta values in two ways:
-        #age, deltaM = cluster.funcOfAgeDeltaHaloData(haloID,quantities[i])
+        #age, deltaM = cluster.funcOfAgeDeltaProfileData(haloID,quantities[i],radius)
         age, deltaM = cluster.funcOfAgeProfileData(haloID,"delta"+quantities[i],radius)
 
         _, M = cluster.funcOfAgeProfileData(haloID,quantities[i],radius)
