@@ -1,12 +1,14 @@
 import numpy as np
 import ahfhalotools.filetools as ft
 from ahfhalotools.objects import Cluster
+import ahfhalotools.analysis as analysis
 from astropy.cosmology import FlatLambdaCDM
 from astropy.cosmology import WMAP9
 from astropy import units as au
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
+import scicm
 
 #define base file name for full, untruncated files
 fileNameBaseGX = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}"
@@ -89,77 +91,69 @@ r, ovdens2 = gxClusters[0].funcOfRadiusProfileData(128000000000001,4)
 print(ovdens2/ovdens) # should be an array of (close to) 1s
 
 ## ------------ PLOT ------------- ##
+## parameters for plotting
 haloID = 128000000000001
+removeNegRadii = True
 ## parameters for colouring by dynamic state
-dsquantity = "com_offset"
-dsquantityLabel = "com offset / kpc/h"
-colormap = cm.cividis
+dsquantity = "mbp_offset"
+logDynState = True
+dsquantityLabel = "log ( mbp offset )"
+colormap = scicm.cm.Quartile
 
 # sets of clusters
 clustersSet = [gxClusters, gizClusters, musClusters1]
 clustersNames = ["GadgetX", "GIZMO", "GadgetMUSIC"]
 
+widths = [1,1,1,0.1]
+gs_kw = dict(width_ratios=widths)
+fig, ax = plt.subplots(1, 4, figsize = (12,6), gridspec_kw = gs_kw)
+(ax1, ax2, ax3, ax4) = ax
+ax1.sharey(ax2)
+ax2.sharey(ax3)
+
+# get dynamical states and get color map ready
+dynstates = np.array([cluster.getHaloData(haloID,dsquantity) for clusters in clustersSet for cluster in clusters])
+if logDynState:
+    dynstates = np.log10(dynstates)
+
+normalize = mcolors.Normalize(vmin=dynstates.min(),vmax=dynstates.max())
+scalarmappable = cm.ScalarMappable(norm=normalize, cmap=colormap)
+scalarmappable.set_array(dynstates)
+
+#go through cluster sets
 for i, clusters in enumerate(clustersSet):
-    widths = [1,1,1,0.1]
-    gs_kw = dict(width_ratios=widths)
-    fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize = (12,6), gridspec_kw = gs_kw, sharey='col')
-
-    # get dynamical states and get color map ready
-    dynstates = np.array([cluster.getHaloData(haloID,dsquantity) for cluster in clusters])
-    normalize = mcolors.Normalize(vmin=dynstates.min(),vmax=dynstates.max())
-    scalarmappable = cm.ScalarMappable(norm=normalize, cmap=colormap)
-    scalarmappable.set_array(dynstates)
-
     for cluster in clusters:
         # get r and density and normalise
-        #    total mass:
-        r, dens = cluster.funcOfRadiusProfileData(haloID,"locDens", removeZeroes=True)
-        dens = dens * flcdm.h**2 / rhoCrit.value
-        r = abs(r / cluster.getHaloData(haloID, "Rvir"))
-
-        #    stellar mass:
-        rs, starDens = cluster.funcOfRadiusProfileData(haloID,"starLocDens", removeZeroes=True)
-        starDens = starDens * flcdm.h**2 / rhoCrit.value
-        rs = abs(rs / cluster.getHaloData(haloID, "Rvir"))
-
         #    gas mass:
         rg, gasDens = cluster.funcOfRadiusProfileData(haloID,"gasLocDens", removeZeroes=True)
         gasDens = gasDens * flcdm.h**2 / rhoCrit.value
+        if removeNegRadii:
+            rg, gasDens = analysis.removeNegatives(rg,gasDens)
         rg = abs(rg / cluster.getHaloData(haloID, "Rvir"))
 
         # get dynamical state
         dstate = cluster.getHaloData(haloID, dsquantity)
+        if logDynState:
+            dstate = np.log10(dstate)
 
-        alpha = 0.7
-        ax1.plot(r,dens,color=colormap(normalize(dstate)), alpha = alpha)
-        ax2.plot(rs,starDens,color=colormap(normalize(dstate)), alpha = alpha)
-        ax3.plot(rg,gasDens,color=colormap(normalize(dstate)), alpha = alpha)
+        # plot
+        alpha = 1
+        ax[i].plot(rg,gasDens,color=colormap(normalize(dstate)), alpha = alpha)
 
-    # add colorbar
-    cbar1 = fig.colorbar(scalarmappable, cax = ax4)
-    cbar1.set_label(dsquantityLabel)
+        #set axis titles and labels
+        ax[i].set_title(clustersNames[i])
+        ax[i].set_xlabel("$r \\; / \\; r_{200}$")
+        ax[i].set_ylabel("$\\rho_{gas} \\; / \\; \\rho_{crit}$")
+        ax[i].set_xscale('log')
+        ax[i].set_yscale('log')
 
-    #label everything
-    fig.suptitle("Local Density vs Radius at z = 0 for central clusters ({0})".format(clustersNames[i]))
+# add colorbar
+cbar1 = fig.colorbar(scalarmappable, cax = ax4)
+cbar1.set_label(dsquantityLabel)
 
-    ax1.set_title("Local Total Mass Density")
-    ax1.set_xlabel("$r \\; / \\; r_{200}$")
-    ax1.set_ylabel("$\\rho \\; / \\; \\rho_{crit}$")
-    ax1.set_xscale('log')
-    ax1.set_yscale('log')
+#figure title
+fig.suptitle("Local Gas Density vs Radius at z = 0")
 
-    ax2.set_title("Local Stellar Density")
-    ax2.set_xlabel("$r \\; / \\; r_{200}$")
-    ax2.set_ylabel("$\\rho_{star} \\; / \\; \\rho_{crit}$")
-    ax2.set_xscale('log')
-    ax2.set_yscale('log')
-
-    ax3.set_title("Local Gas Density")
-    ax3.set_xlabel("$r \\; / \\; r_{200}$")
-    ax3.set_ylabel("$\\rho_{gas} \\; / \\; \\rho_{crit}$")
-    ax3.set_xscale('log')
-    ax3.set_yscale('log')
-
-    plt.tight_layout()
+plt.tight_layout()
 
 plt.show()
