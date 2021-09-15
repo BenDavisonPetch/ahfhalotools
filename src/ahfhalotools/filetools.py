@@ -6,8 +6,8 @@ and file truncation.
 
 import os
 import numpy as np
-from .objects import *
-from .analysis import *
+from . import objects as obj
+from . import analysis
 import string
 
 def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
@@ -88,7 +88,7 @@ def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
         print("About to truncate {0}:".format(fileName))
         #truncate profiles and halos files
 
-        snap = Snapshot(snaps[i],zs[i],fileName+haloFileExt,
+        snap = obj.Snapshot(snaps[i],zs[i],fileName+haloFileExt,
                         fileName+profileFileExt, haloLimit = numHalos)
         snap.writeFiles(outName)
         print("    Profiles and Halos done")
@@ -450,7 +450,7 @@ def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = "NewMDCLUSTE
             print("WARNING: Non-existent cluster data:\n{0}".format(inputDir))
             continue
 
-        cluster = Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
+        cluster = obj.Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
                           haloExt = haloExt, mtreeidxExt = mtreeidxExt,
                           mtreeExt = mtreeExt, haloLimit = haloLimit,
                           clusterNum = clusterNum, simName = simName,

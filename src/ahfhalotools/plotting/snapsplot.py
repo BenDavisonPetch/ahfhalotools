@@ -4,7 +4,7 @@ import matplotlib.colors as mcolors
 import matplotlib.cm as cm
 from astropy.cosmology import FlatLambdaCDM
 from astropy.cosmology import WMAP9
-from ..analysis import *
+from .. import analysis
 
 '''========================================================='''
 '''                     PLOT FUNCTIONS                      '''
@@ -117,7 +117,7 @@ def plot4halovtimeradinterp(x_func,v_func,snaps,zs,title,x_label,y_label,radii):
         lambda that should take list of redshifts (floats) and return array
         representing x values.
         e.g:
-        lambda zs : tfromz(z)
+        lambda zs : analysis.tfromz(z)
     v_func : lambda
         lambda that should take Halo object and return array representing
         profile data in question as a *function of radius*
@@ -154,7 +154,7 @@ def plot4halovtimeradinterp(x_func,v_func,snaps,zs,title,x_label,y_label,radii):
 
         for radius in radii:
             x = x_func(zs)
-            y = getAsFuncOfTimeAtRadius(snaps,i,v_func,radius)
+            y = analysis.getAsFuncOfTimeAtRadius(snaps,i,v_func,radius)
             ax[row,col].plot(x,y, label="r = {0}".format(radius))
 
 
@@ -251,7 +251,7 @@ def plot1halovtimecompfuncs(haloid,x_func,v_funcs,value_names,snaps,zs,title,x_l
         if col == 0: ax[row,col].set_ylabel(y_label)
 
         for j in range(len(v_funcs)):
-            y = getAsFuncOfTimeAtRadius(snaps,haloid,v_funcs[j],radius)
+            y = analysis.getAsFuncOfTimeAtRadius(snaps,haloid,v_funcs[j],radius)
             ax[row,col].plot(x,y, label=value_names[j])
 
 
@@ -292,7 +292,7 @@ def plothalovtimecompsims_radinterp(ax, haloid,x_func,v_func,sims,sim_names,titl
         #NOTE: above line is not very efficient, if scaled to more data just
         #    give z arrays in arguments of function
         x = x_func(zs)
-        y = getAsFuncOfTimeAtRadius(snapshots,haloid,v_func,radius)
+        y = analysis.getAsFuncOfTimeAtRadius(snapshots,haloid,v_func,radius)
         ax.plot(x,y, label=sim_names[i])
 
         ax.legend()

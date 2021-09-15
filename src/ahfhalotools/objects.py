@@ -3,8 +3,7 @@ A collection of objects used to store and analyse AHF data.
 """
 
 import numpy as np
-from .analysis import *
-from .filetools import *
+from . import analysis
 import warnings
 
 #number of columns in profile table
@@ -118,7 +117,7 @@ class Halo:
         self.z = z
         self.halodata['z'] = z
         #age is in Gyr
-        self.age = tfromz(z)
+        self.age = analysis.tfromz(z)
         self.halodata['age'] = self.age
         #sigV in km/sec
         self.sigV = halodata[18]
@@ -415,12 +414,12 @@ class Halo:
         temps : array of dtype float
         """
         print("WARNING: Temperature function may be using incorrect units for calculation")
-        return UtoT(self.intEnergies())
+        return analysis.UtoT(self.intEnergies())
         #IE = self.intEnergies()
         #gasM_in_r = self.gasM_in_r() * apconst.M_sun.value
         #out = np.array([0.0]*len(gasM_in_r))
         #U = np.divide(IE,gasM_in_r,out=out,where=gasM_in_r!=0)
-        #return UtoT(U)
+        #return analysis.UtoT(U)
 
 '''========================================================='''
 '''                     SNAPSHOT CLASS                      '''
@@ -456,7 +455,7 @@ class Snapshot:
         self.snapNo = snapNo
         self.z = z
         #age in Gyr
-        self.age = tfromz(z)
+        self.age = analysis.tfromz(z)
         self.__haloFile__ = haloFile
         self.__profileFile__ = profileFile
 
@@ -973,7 +972,7 @@ class Cluster:
             get the time delta of a halo data quantity as a function of age
         """
         zs, values = self.funcOfZHaloData(haloID,quantity)
-        return tfromz(zs), values
+        return analysis.tfromz(zs), values
 
     def funcOfZDeltaHaloData(self, haloID, quantity):
         """
@@ -1056,7 +1055,7 @@ class Cluster:
             get the time delta of a halo data quantity as a function of redshift
         """
         zs, deltaValues = self.funcOfZDeltaHaloData(haloID,quantity)
-        return tfromz(zs), deltaValues
+        return analysis.tfromz(zs), deltaValues
 
     def funcOfZProfileData(self, haloID, quantity, radius):
         """
@@ -1139,7 +1138,7 @@ class Cluster:
         Cluster.funcOfAgeDeltaProfileData
         """
         zs, values = self.funcOfZProfileData(haloID,quantity,radius)
-        return tfromz(zs),values
+        return analysis.tfromz(zs),values
 
     def funcOfZDeltaProfileData(self, haloID, quantity, radius):
         """
@@ -1229,7 +1228,7 @@ class Cluster:
         Cluster.funcOfZDeltaProfileData
         """
         zs, deltaValues = self.funcOfZDeltaProfileData(haloID, quantity, radius)
-        ages = tfromz(zs)
+        ages = analysis.tfromz(zs)
         return ages, deltaValues
 
     def funcOfRandZProfileDataPoints(self, masterHaloID, quantity, removeZeroes = False):
@@ -1543,7 +1542,7 @@ class Cluster:
         TODO
         """
         zs, sizes = self.getMergeZs(haloIDtoTrack,threshold=threshold,scheme=scheme,fractional=fractional)
-        return tfromz(zs), sizes
+        return analysis.tfromz(zs), sizes
 
     def getLargestMergeZInRange(self, masterHaloID, minZ, maxZ, scheme="halodata", fractional = True):
         """

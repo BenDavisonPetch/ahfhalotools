@@ -12,7 +12,7 @@ fileNameBaseGX = "GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
 fileNameBaseGiz = "GIZMO-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
 fileNameBaseMus = "GadgetMUSIC-NewMDCLUSTER_0001.z{z:.3f}"
 #define directory
-gxdir = "gadgetX\\"
+gxdir = "GadgetX\\NewMDCLUSTER_0001\\"
 gizdir = "gizmo\\"
 musdir = "music\\"
 #define snapshots to load
