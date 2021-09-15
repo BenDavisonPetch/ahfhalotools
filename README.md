@@ -19,11 +19,10 @@ AHFHaloTools is a Python 3 library for the analysis of data produced by AMIGA's 
 ## Installation
 `pip install ahfhalotools`
 
-## Usage and Documentation
-The majority of analysis is enabled by the `ahfhalotools.objects.Cluster` object.
-Example analysis and truncation scripts are available in `/examples`.
+## Documentation
+View HTML documentation __[here](https://htmlpreview.github.io/?https://raw.githubusercontent.com/BenDavisonPetch/ahfhalotools/main/docs/ahfhalotools/index.html)__
 
-Documentation is available in two places: the first is as docstrings within the
+Documentation is also available in docstrings within the
 code, which can be viewed using the built-in ``help`` function:
 
 ```python
@@ -32,7 +31,11 @@ code, which can be viewed using the built-in ``help`` function:
     Help on class Cluster in module ahfhalotools.objects: ...
 ```
 
-The other way to view documentation is in a web browser [here](https://htmlpreview.github.io/?https://raw.githubusercontent.com/BenDavisonPetch/ahfhalotools/main/docs/ahfhalotools/index.html)
+The majority of analysis is enabled by the `ahfhalotools.objects.Cluster` object.
+
+## Examples
+Example scripts are available in `/examples`. These scripts are provided without data, as the data files are large and can't go on GitHub. To run them on a local machine, data must be downloaded and truncated, and the paths to the data in the scripts should be updated to reflect the location of the files.
+Alternatively the scripts could be deployed to popia/castor and run there, after updating the directory paths in the code. Data should still be truncated before running, otherwise the scripts will execute very slowly.
 
 ## AHF documentation
 For information on AMIGA's Halo Finder, including documentation and output file formats, you can visit their website [here](http://popia.ft.uam.es/AHF/Download.html).

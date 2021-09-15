@@ -24,18 +24,26 @@
 <section id="section-intro">
 <p>A Python 3 library for the analysis of data produced by AMIGA's Halo Finder (AHF).</p>
 <p>For more information visit <a href="https://github.com/BenDavisonPetch/ahfhalotools">https://github.com/BenDavisonPetch/ahfhalotools</a></p>
+<h2 id="usage-and-examples">Usage And Examples</h2>
 <p>The majority of analysis is done via the ahfhalotools.objects.Cluster class. For
 examples on usage, there are example scripts available at:
 <a href="https://github.com/BenDavisonPetch/ahfhalotools/tree/main/examples">https://github.com/BenDavisonPetch/ahfhalotools/tree/main/examples</a>
-These scripts are provided without data, as the files are large and can't go
-on GitHub.</p>
+These scripts are provided without data, as the data files are large and can't
+go on GitHub. To run them on a local machine, data must be downloaded and
+truncated, and the paths to the data in the scripts should be updated to reflect
+the location of the files.
+Alternatively the scripts could be deployed to popia/castor and run there, after
+updating the directory paths in the code. Data should still be truncated before
+running, otherwise the scripts will execute very slowly.</p>
+<h2 id="documentation">Documentation</h2>
 <p>Documentation is available in two places: the first is as docstrings within the
 code, which can be viewed using the built-in <code>help</code> function:</p>
 <pre><code>&gt;&gt;&gt; from ahfhalotools.objects import Cluster
 &gt;&gt;&gt; help(Cluster)
 Help on class Cluster in module ahfhalotools.objects: ...
 </code></pre>
-<p>The other way to view documentation is in a web browser at</p>
+<p>The other way to view documentation is in a web browser at:
+<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/BenDavisonPetch/ahfhalotools/main/docs/ahfhalotools/index.html">https://htmlpreview.github.io/?https://raw.githubusercontent.com/BenDavisonPetch/ahfhalotools/main/docs/ahfhalotools/index.html</a></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -45,12 +53,21 @@ A Python 3 library for the analysis of data produced by AMIGA&#39;s Halo Finder 
 
 For more information visit https://github.com/BenDavisonPetch/ahfhalotools
 
+Usage and Examples
+------------------
 The majority of analysis is done via the ahfhalotools.objects.Cluster class. For
 examples on usage, there are example scripts available at:
 https://github.com/BenDavisonPetch/ahfhalotools/tree/main/examples
-These scripts are provided without data, as the files are large and can&#39;t go
-on GitHub.
+These scripts are provided without data, as the data files are large and can&#39;t
+go on GitHub. To run them on a local machine, data must be downloaded and
+truncated, and the paths to the data in the scripts should be updated to reflect
+the location of the files.
+Alternatively the scripts could be deployed to popia/castor and run there, after
+updating the directory paths in the code. Data should still be truncated before
+running, otherwise the scripts will execute very slowly.
 
+Documentation
+-------------
 Documentation is available in two places: the first is as docstrings within the
 code, which can be viewed using the built-in ``help`` function:
 
@@ -58,7 +75,8 @@ code, which can be viewed using the built-in ``help`` function:
     &gt;&gt;&gt; help(Cluster)
     Help on class Cluster in module ahfhalotools.objects: ...
 
-The other way to view documentation is in a web browser at
+The other way to view documentation is in a web browser at:
+https://htmlpreview.github.io/?https://raw.githubusercontent.com/BenDavisonPetch/ahfhalotools/main/docs/ahfhalotools/index.html
 &#34;&#34;&#34;
 
 #__all__ = [&#34;analysis&#34;,&#34;filetools&#34;,&#34;objects&#34;]</code></pre>
@@ -96,7 +114,10 @@ snapshot to redshift mapping from filenames, reading multiple clusters …</p></
 <nav id="sidebar">
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#usage-and-examples">Usage and Examples</a></li>
+<li><a href="#documentation">Documentation</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
