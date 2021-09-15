@@ -888,6 +888,7 @@ class Cluster:
         except AttributeError:
             #self.getHalo has returned -1, ie we do not have the halo specified
             #loaded into memory
+            print("WARNING: Halo {0} not loaded into memory for {1} cluster {2}".format(haloID,self.simName,self.clusterNum))
             return -1
 
     def funcOfZHaloData(self, haloID, quantity):

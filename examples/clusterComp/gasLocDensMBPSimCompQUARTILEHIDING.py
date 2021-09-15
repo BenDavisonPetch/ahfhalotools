@@ -18,35 +18,16 @@ fileNameBaseMus = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.z{z:.3f}"
 directory = "TruncData/{simName}/"
 
 #define snapshots to use
-snapNos = np.arange(97,129)
-
-## Truncation ##
-
-#define how many halos truncated files should contain information on
-truncSize = 1
+snapNos = [128]
 
 #cluster numbers
 #clusterNums = np.arange(1,325)
-clusterNums = np.arange(1,51)
+clusterNums = np.arange(1,325)
 
 # N.B. for GadgetMUSIC data, for some reason, for cluster numbers 22 and above,
 # there are only 17 snapshots. The snapshots with redshift less than one are
-# 7-17, so we truncate these separately.
+# 7-17
 
-#up to 128
-# musClusters1 = ft.loadClusters(np.arange(1,22), snapNos, "GadgetMUSIC",
-#                                directory = directory,
-#                                fileBaseFmt = fileNameBaseMus,
-#                                printProgress = True, skipmtree = True)
-
-# #up to 17
-# musClusters2 = ft.loadClusters(np.arange(22,325), np.arange(7,18), "GadgetMUSIC",
-#                                directory = directory,
-#                                fileBaseFmt = fileNameBaseMus,
-#                                printProgress = True, skipmtree = True)
-#
-
-# TODO: change back cluster loading for all of them
 musClusters1 = ft.loadClusters(np.arange(1,22), snapNos, "GadgetMUSIC",
                                directory = directory,
                                fileBaseFmt = fileNameBaseMus,
@@ -89,13 +70,13 @@ print(ovdens2/ovdens) # should be an array of (close to) 1s
 ## parameters for plotting
 haloID = 128000000000001
 removeNegRadii = True
-figtitle = "Local Total Mass Density vs Radius at z = 0, separated by mbp offset"
-ylabel = "$\\rho \\; / \\; \\rho_{crit}$"
-plotQuantity = "locDens"
+figtitle = "Local Gas Mass Density vs Radius at z = 0, separated by mbp offset"
+ylabel = "$\\rho_{gas} \\; / \\; \\rho_{crit}$"
+plotQuantity = "gasLocDens"
 ## parameters for colouring by dynamic state
-dsquantity = "mbp_offset"
+dsquantity = "com_offset"
 logDynState = True
-dsquantityLabel = "log ( mbp offset )"
+dsquantityLabel = "log ( COM offset / $kpc \\; h^{-1}$)"
 
 # sets of clusters
 clustersSet = [gxClusters, gizClusters, musClusters1]

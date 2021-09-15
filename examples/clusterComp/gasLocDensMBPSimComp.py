@@ -20,10 +20,6 @@ directory = "TruncData/{simName}/"
 #define snapshots to use
 snapNos = np.arange(97,129)
 
-## Truncation ##
-
-#define how many halos truncated files should contain information on
-truncSize = 1
 
 #cluster numbers
 #clusterNums = np.arange(1,325)
@@ -31,7 +27,7 @@ clusterNums = np.arange(1,50)
 
 # N.B. for GadgetMUSIC data, for some reason, for cluster numbers 22 and above,
 # there are only 17 snapshots. The snapshots with redshift less than one are
-# 7-17, so we truncate these separately.
+# 7-17
 
 #up to 128
 # musClusters1 = ft.loadClusters(np.arange(1,22), snapNos, "GadgetMUSIC",
