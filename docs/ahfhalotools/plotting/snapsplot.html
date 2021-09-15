@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>ahfhalotools.plotting.snapsplot API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ahfhalotools.plotting.snapsplot</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
+from astropy.cosmology import FlatLambdaCDM
+from astropy.cosmology import WMAP9
+from .. import analysis
+
+&#39;&#39;&#39;=========================================================&#39;&#39;&#39;
+&#39;&#39;&#39;                     PLOT FUNCTIONS                      &#39;&#39;&#39;
+&#39;&#39;&#39;=========================================================&#39;&#39;&#39;
+
+def plot4halocb(x_func,y_func,snaps,zs,title,x_label,y_label, debug = False):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of profile data vs profile data for 4 most massive halos
+    with a colorbar for z.
+
+    .. deprecated:: 0.0.0
+        plot4halocb uses outdated data format of a list of Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+
+    Parameters
+    ----------
+    x_func : lambda
+        lambda that should take Halo object and return array representing x
+        values.
+        e.g:
+        lambda halo : halo.radii()
+    y_func : lambda
+        lambda that should take Halo object and return array representing y
+        values.
+    snaps : list of Snapshot instances
+    zs : list of floats
+        List of redshifts that correspond to snapshots in snaps
+    title : str
+        Title of plot
+    x_label : str
+        x axis label of plot
+    y_label : str
+        y axis label of plot
+    &#34;&#34;&#34;
+    widths = [1,1,0.1]
+    gs_kw = dict(width_ratios=widths)
+    fig,ax = plt.subplots(2,3,figsize=(9,6),gridspec_kw=gs_kw)
+    fig.suptitle(title,wrap=True)
+
+    #setup color stuff
+    normalize = mcolors.Normalize(vmin=zs.min(),vmax=zs.max())
+    colormap = cm.plasma
+
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+        ax[row,col].set_title(&#34;Halo {0}&#34;.format(i+1))
+        ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(&#34;log&#34;)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        for snap in snaps:
+            halo = snap.halos[i]
+            x = x_func(halo)
+            y = y_func(halo)
+
+            #DEBUG
+            if y.min() &lt; 100 and debug:
+                print(&#34;WEIRD DATA&#34;)
+                print(&#34;y min is {0} for snapshot {1}&#34;.format(y.min(),snap.snapNo))
+                print(x)
+                print(y)
+
+            #r,dens = removeNegatives(r,dens)
+
+            ax[row,col].plot(x,y,label=&#34;$z={z:.3f}$&#34;.format(z=snap.z),color=colormap(normalize(snap.z)))
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+
+        #ax[row,col].legend()
+
+
+    #---- colorbar legend ----
+    scalarmappable = cm.ScalarMappable(norm=normalize, cmap=colormap)
+    scalarmappable.set_array(zs)
+
+    gs = ax[0,2].get_gridspec()
+    #remove plots on rightmost column
+    ax[0,2].remove()
+    ax[1,2].remove()
+    #create big axis for color bar
+    cax = fig.add_subplot(gs[:,2])
+    fig.colorbar(scalarmappable, cax=cax)
+    cax.set_ylabel(&#34;redshift, $z$&#34;)
+
+
+    plt.tight_layout()
+    plt.show()
+
+def plot4halovtimeradinterp(x_func,v_func,snaps,zs,title,x_label,y_label,radii):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of profile data vs time for 4 most massive halos.
+
+    .. deprecated:: 0.0.0
+        plot4halovtimeradinterp uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+
+    Parameters
+    ----------
+    x_func : lambda
+        lambda that should take list of redshifts (floats) and return array
+        representing x values.
+        e.g:
+        lambda zs : analysis.tfromz(z)
+    v_func : lambda
+        lambda that should take Halo object and return array representing
+        profile data in question as a *function of radius*
+    snaps : list of Snapshot instances
+    zs : list of floats
+        List of redshifts that correspond to snapshots in snaps
+    title : str
+        Title of plot
+    x_label : str
+        x axis label of plot
+    y_label : str
+        y axis label of plot
+    radii : list of floats
+        List of radii to interpolate at
+    &#34;&#34;&#34;
+    fig,ax = plt.subplots(2,2,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+        #calculate expected timescale from halo at z=0
+        halo = snaps[0].halos[i]
+        sigV = halo.sigV * 1000 #km/s to m/s
+        Rvir = halo.Rvir * 3.086e+19 / (WMAP9.H(0).value/100) #kpc/h to m
+        timescale = Rvir/sigV / (60**2 * 24 * 365.26 * 1e9)
+
+        ax[row,col].set_title(&#34;Halo {hid}, expected timescale {t:.3f}Gyr&#34;.format(hid=i+1,t=timescale))
+        #ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(&#34;log&#34;)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        for radius in radii:
+            x = x_func(zs)
+            y = analysis.getAsFuncOfTimeAtRadius(snaps,i,v_func,radius)
+            ax[row,col].plot(x,y, label=&#34;r = {0}&#34;.format(radius))
+
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+        ax[row,col].legend()
+
+
+    plt.tight_layout()
+    plt.show()
+
+def plot4halovtime(x_func,v_funcs,v_names,snaps,zs,title,x_label,y_label, yscale = &#34;log&#34;,
+                   ls = None):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of halo data vs time for 4 most massive halos.
+
+    .. deprecated:: 0.0.0
+        plot4halovtime uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #plots a halo data piece against time for 4 different halos
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_funcs is array of lambdas that takes halo and returns halo data value being plotted on y
+    #v_names is names of values from v_funcs
+    if not ls: ls = [&#34;&#34;]*len(v_funcs)
+
+    fig,ax = plt.subplots(2,2,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+
+        ax[row,col].set_title(&#34;Halo {hid}&#34;.format(hid=i+1))
+        #ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(yscale)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        x = x_func(zs)
+        for j in range(len(v_funcs)):
+            v_func = v_funcs[j]
+            y = [v_func(snap.halos[i]) for snap in snaps]
+            ax[row,col].plot(x,y,ls[j],label=v_names[j])
+
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+        if len(v_funcs) &gt; 1: ax[row,col].legend(loc=&#34;upper right&#34;)
+
+    plt.tight_layout()
+    plt.show()
+
+def plot1halovtimecompfuncs(haloid,x_func,v_funcs,value_names,snaps,zs,title,x_label,y_label,radii):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of different pieces of halo data vs time for a particular
+    halo.
+
+    .. deprecated:: 0.0.0
+        plot1halovtimecompfuncs uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #radii is array of radii to test at
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_funcs is array of lambdas that takes halo and returns array of value in question as a
+    #  function of **radius**
+    fig,ax = plt.subplots(2,2,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    halo = snaps[0].halos[haloid]
+    #timescale calc
+    sigV = halo.sigV * 1000 #km/s to m/s
+    Rvir = halo.Rvir * 3.086e+19 / (WMAP9.H(0).value/100) #kpc/h to m
+    timescale = Rvir/sigV / (60**2 * 24 * 365.26 * 1e9)
+    x = x_func(zs)
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+        radius = radii[i]
+
+        ax[row,col].set_title(&#34;r = {radius}, expected timescale {t:.3f}Gyr&#34;.format(radius=radius,t=timescale))
+        #ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(&#34;log&#34;)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        for j in range(len(v_funcs)):
+            y = analysis.getAsFuncOfTimeAtRadius(snaps,haloid,v_funcs[j],radius)
+            ax[row,col].plot(x,y, label=value_names[j])
+
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+        ax[row,col].legend()
+
+
+    plt.tight_layout()
+    plt.show()
+
+def plothalovtimecompsims_radinterp(ax, haloid,x_func,v_func,sims,sim_names,title,x_label,y_label,radius):
+    &#34;&#34;&#34;
+    Takes a matplotlib.Axes.axes object and plots onto it a piece of profile
+    data, interpolated at a specified radius, as a function of time, for each
+    simulation.
+
+    .. deprecated:: 0.0.0
+        plothalovtimecompsims_radinterp uses the outdated data format of a list
+        of Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #ax is axis object that is plotted onto
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_func is lambda that takes halo and returns array of value in question as a
+    #  function of **radius**
+    #sims is an array of arrays of snaps corresponding to each simulation
+    ax.set_yscale(&#34;log&#34;)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(title)
+
+    for i in range(len(sims)):
+        snapshots = sims[i]
+        zs = np.array([snapshot.z for snapshot in snapshots])
+        #NOTE: above line is not very efficient, if scaled to more data just
+        #    give z arrays in arguments of function
+        x = x_func(zs)
+        y = analysis.getAsFuncOfTimeAtRadius(snapshots,haloid,v_func,radius)
+        ax.plot(x,y, label=sim_names[i])
+
+        ax.legend()
+    #plt.tight_layout()
+    #plt.show()
+
+def plothalovtimecompsims(haloid,x_func,v_func,sims,sim_names,title,x_label,y_label,yscale=&#34;log&#34;):
+    &#34;&#34;&#34;
+    Plots a graph of halo data as a function of time for each simulation.
+
+    .. deprecated:: 0.0.0
+        plothalovtimecompsims uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_func is lambda that takes halo and returns halodata being plotted
+    #sims is an array of arrays of snaps corresponding to each simulation
+    fig,ax = plt.subplots(1,1,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    #ax[row,col].set_xscale(&#34;log&#34;)
+    ax.set_yscale(yscale)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+
+    for i in range(len(sims)):
+        snapshots = sims[i]
+        zs = np.array([snapshot.z for snapshot in snapshots])
+        #NOTE: above line is not very efficient, if scaled to more data just
+        #    give z arrays in arguments of function
+        x = x_func(zs)
+        y = [v_func(snap.halos[haloid]) for snap in snapshots]
+        ax.plot(x,y, label=sim_names[i])
+
+        ax.legend()
+    plt.tight_layout()
+    plt.show()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="ahfhalotools.plotting.snapsplot.plot1halovtimecompfuncs"><code class="name flex">
+<span>def <span class="ident">plot1halovtimecompfuncs</span></span>(<span>haloid, x_func, v_funcs, value_names, snaps, zs, title, x_label, y_label, radii)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plots a 2x2 grid of different pieces of halo data vs time for a particular
+halo.</p>
+<div class="admonition deprecated">
+<p class="admonition-title">Deprecated since version:&ensp;0.0.0</p>
+<p>plot1halovtimecompfuncs uses the outdated data format of a list of
+Snapshot instances.
+This results in inaccurate tracking of halos through time.
+Instead, plotting should be done manually, with data obtained via the
+ahfhalotools.objects.Cluster object</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot1halovtimecompfuncs(haloid,x_func,v_funcs,value_names,snaps,zs,title,x_label,y_label,radii):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of different pieces of halo data vs time for a particular
+    halo.
+
+    .. deprecated:: 0.0.0
+        plot1halovtimecompfuncs uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #radii is array of radii to test at
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_funcs is array of lambdas that takes halo and returns array of value in question as a
+    #  function of **radius**
+    fig,ax = plt.subplots(2,2,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    halo = snaps[0].halos[haloid]
+    #timescale calc
+    sigV = halo.sigV * 1000 #km/s to m/s
+    Rvir = halo.Rvir * 3.086e+19 / (WMAP9.H(0).value/100) #kpc/h to m
+    timescale = Rvir/sigV / (60**2 * 24 * 365.26 * 1e9)
+    x = x_func(zs)
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+        radius = radii[i]
+
+        ax[row,col].set_title(&#34;r = {radius}, expected timescale {t:.3f}Gyr&#34;.format(radius=radius,t=timescale))
+        #ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(&#34;log&#34;)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        for j in range(len(v_funcs)):
+            y = analysis.getAsFuncOfTimeAtRadius(snaps,haloid,v_funcs[j],radius)
+            ax[row,col].plot(x,y, label=value_names[j])
+
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+        ax[row,col].legend()
+
+
+    plt.tight_layout()
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.plotting.snapsplot.plot4halocb"><code class="name flex">
+<span>def <span class="ident">plot4halocb</span></span>(<span>x_func, y_func, snaps, zs, title, x_label, y_label, debug=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plots a 2x2 grid of profile data vs profile data for 4 most massive halos
+with a colorbar for z.</p>
+<div class="admonition deprecated">
+<p class="admonition-title">Deprecated since version:&ensp;0.0.0</p>
+<p>plot4halocb uses outdated data format of a list of Snapshot instances.
+This results in inaccurate tracking of halos through time.
+Instead, plotting should be done manually, with data obtained via the
+ahfhalotools.objects.Cluster object</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x_func</code></strong> :&ensp;<code>lambda</code></dt>
+<dd>lambda that should take Halo object and return array representing x
+values.
+e.g:
+lambda halo : halo.radii()</dd>
+<dt><strong><code>y_func</code></strong> :&ensp;<code>lambda</code></dt>
+<dd>lambda that should take Halo object and return array representing y
+values.</dd>
+<dt><strong><code>snaps</code></strong> :&ensp;<code>list</code> of <code>Snapshot instances</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>zs</code></strong> :&ensp;<code>list</code> of <code>floats</code></dt>
+<dd>List of redshifts that correspond to snapshots in snaps</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Title of plot</dd>
+<dt><strong><code>x_label</code></strong> :&ensp;<code>str</code></dt>
+<dd>x axis label of plot</dd>
+<dt><strong><code>y_label</code></strong> :&ensp;<code>str</code></dt>
+<dd>y axis label of plot</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot4halocb(x_func,y_func,snaps,zs,title,x_label,y_label, debug = False):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of profile data vs profile data for 4 most massive halos
+    with a colorbar for z.
+
+    .. deprecated:: 0.0.0
+        plot4halocb uses outdated data format of a list of Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+
+    Parameters
+    ----------
+    x_func : lambda
+        lambda that should take Halo object and return array representing x
+        values.
+        e.g:
+        lambda halo : halo.radii()
+    y_func : lambda
+        lambda that should take Halo object and return array representing y
+        values.
+    snaps : list of Snapshot instances
+    zs : list of floats
+        List of redshifts that correspond to snapshots in snaps
+    title : str
+        Title of plot
+    x_label : str
+        x axis label of plot
+    y_label : str
+        y axis label of plot
+    &#34;&#34;&#34;
+    widths = [1,1,0.1]
+    gs_kw = dict(width_ratios=widths)
+    fig,ax = plt.subplots(2,3,figsize=(9,6),gridspec_kw=gs_kw)
+    fig.suptitle(title,wrap=True)
+
+    #setup color stuff
+    normalize = mcolors.Normalize(vmin=zs.min(),vmax=zs.max())
+    colormap = cm.plasma
+
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+        ax[row,col].set_title(&#34;Halo {0}&#34;.format(i+1))
+        ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(&#34;log&#34;)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        for snap in snaps:
+            halo = snap.halos[i]
+            x = x_func(halo)
+            y = y_func(halo)
+
+            #DEBUG
+            if y.min() &lt; 100 and debug:
+                print(&#34;WEIRD DATA&#34;)
+                print(&#34;y min is {0} for snapshot {1}&#34;.format(y.min(),snap.snapNo))
+                print(x)
+                print(y)
+
+            #r,dens = removeNegatives(r,dens)
+
+            ax[row,col].plot(x,y,label=&#34;$z={z:.3f}$&#34;.format(z=snap.z),color=colormap(normalize(snap.z)))
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+
+        #ax[row,col].legend()
+
+
+    #---- colorbar legend ----
+    scalarmappable = cm.ScalarMappable(norm=normalize, cmap=colormap)
+    scalarmappable.set_array(zs)
+
+    gs = ax[0,2].get_gridspec()
+    #remove plots on rightmost column
+    ax[0,2].remove()
+    ax[1,2].remove()
+    #create big axis for color bar
+    cax = fig.add_subplot(gs[:,2])
+    fig.colorbar(scalarmappable, cax=cax)
+    cax.set_ylabel(&#34;redshift, $z$&#34;)
+
+
+    plt.tight_layout()
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.plotting.snapsplot.plot4halovtime"><code class="name flex">
+<span>def <span class="ident">plot4halovtime</span></span>(<span>x_func, v_funcs, v_names, snaps, zs, title, x_label, y_label, yscale='log', ls=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plots a 2x2 grid of halo data vs time for 4 most massive halos.</p>
+<div class="admonition deprecated">
+<p class="admonition-title">Deprecated since version:&ensp;0.0.0</p>
+<p>plot4halovtime uses the outdated data format of a list of
+Snapshot instances.
+This results in inaccurate tracking of halos through time.
+Instead, plotting should be done manually, with data obtained via the
+ahfhalotools.objects.Cluster object</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot4halovtime(x_func,v_funcs,v_names,snaps,zs,title,x_label,y_label, yscale = &#34;log&#34;,
+                   ls = None):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of halo data vs time for 4 most massive halos.
+
+    .. deprecated:: 0.0.0
+        plot4halovtime uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #plots a halo data piece against time for 4 different halos
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_funcs is array of lambdas that takes halo and returns halo data value being plotted on y
+    #v_names is names of values from v_funcs
+    if not ls: ls = [&#34;&#34;]*len(v_funcs)
+
+    fig,ax = plt.subplots(2,2,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+
+        ax[row,col].set_title(&#34;Halo {hid}&#34;.format(hid=i+1))
+        #ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(yscale)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        x = x_func(zs)
+        for j in range(len(v_funcs)):
+            v_func = v_funcs[j]
+            y = [v_func(snap.halos[i]) for snap in snaps]
+            ax[row,col].plot(x,y,ls[j],label=v_names[j])
+
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+        if len(v_funcs) &gt; 1: ax[row,col].legend(loc=&#34;upper right&#34;)
+
+    plt.tight_layout()
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.plotting.snapsplot.plot4halovtimeradinterp"><code class="name flex">
+<span>def <span class="ident">plot4halovtimeradinterp</span></span>(<span>x_func, v_func, snaps, zs, title, x_label, y_label, radii)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plots a 2x2 grid of profile data vs time for 4 most massive halos.</p>
+<div class="admonition deprecated">
+<p class="admonition-title">Deprecated since version:&ensp;0.0.0</p>
+<p>plot4halovtimeradinterp uses the outdated data format of a list of
+Snapshot instances.
+This results in inaccurate tracking of halos through time.
+Instead, plotting should be done manually, with data obtained via the
+ahfhalotools.objects.Cluster object</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x_func</code></strong> :&ensp;<code>lambda</code></dt>
+<dd>lambda that should take list of redshifts (floats) and return array
+representing x values.
+e.g:
+lambda zs : analysis.tfromz(z)</dd>
+<dt><strong><code>v_func</code></strong> :&ensp;<code>lambda</code></dt>
+<dd>lambda that should take Halo object and return array representing
+profile data in question as a <em>function of radius</em></dd>
+<dt><strong><code>snaps</code></strong> :&ensp;<code>list</code> of <code>Snapshot instances</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>zs</code></strong> :&ensp;<code>list</code> of <code>floats</code></dt>
+<dd>List of redshifts that correspond to snapshots in snaps</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Title of plot</dd>
+<dt><strong><code>x_label</code></strong> :&ensp;<code>str</code></dt>
+<dd>x axis label of plot</dd>
+<dt><strong><code>y_label</code></strong> :&ensp;<code>str</code></dt>
+<dd>y axis label of plot</dd>
+<dt><strong><code>radii</code></strong> :&ensp;<code>list</code> of <code>floats</code></dt>
+<dd>List of radii to interpolate at</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot4halovtimeradinterp(x_func,v_func,snaps,zs,title,x_label,y_label,radii):
+    &#34;&#34;&#34;
+    Plots a 2x2 grid of profile data vs time for 4 most massive halos.
+
+    .. deprecated:: 0.0.0
+        plot4halovtimeradinterp uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+
+    Parameters
+    ----------
+    x_func : lambda
+        lambda that should take list of redshifts (floats) and return array
+        representing x values.
+        e.g:
+        lambda zs : analysis.tfromz(z)
+    v_func : lambda
+        lambda that should take Halo object and return array representing
+        profile data in question as a *function of radius*
+    snaps : list of Snapshot instances
+    zs : list of floats
+        List of redshifts that correspond to snapshots in snaps
+    title : str
+        Title of plot
+    x_label : str
+        x axis label of plot
+    y_label : str
+        y axis label of plot
+    radii : list of floats
+        List of radii to interpolate at
+    &#34;&#34;&#34;
+    fig,ax = plt.subplots(2,2,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    for i in range(4):
+        #row and column indexes
+        row = i//2
+        col = i%2
+        #calculate expected timescale from halo at z=0
+        halo = snaps[0].halos[i]
+        sigV = halo.sigV * 1000 #km/s to m/s
+        Rvir = halo.Rvir * 3.086e+19 / (WMAP9.H(0).value/100) #kpc/h to m
+        timescale = Rvir/sigV / (60**2 * 24 * 365.26 * 1e9)
+
+        ax[row,col].set_title(&#34;Halo {hid}, expected timescale {t:.3f}Gyr&#34;.format(hid=i+1,t=timescale))
+        #ax[row,col].set_xscale(&#34;log&#34;)
+        ax[row,col].set_yscale(&#34;log&#34;)
+        if row == 1: ax[row,col].set_xlabel(x_label)
+        if col == 0: ax[row,col].set_ylabel(y_label)
+
+        for radius in radii:
+            x = x_func(zs)
+            y = analysis.getAsFuncOfTimeAtRadius(snaps,i,v_func,radius)
+            ax[row,col].plot(x,y, label=&#34;r = {0}&#34;.format(radius))
+
+
+        #ax[row,col].set_xlim(0,5)
+        #ax[row,col].set_ylim(0,300000000)
+        ax[row,col].legend()
+
+
+    plt.tight_layout()
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.plotting.snapsplot.plothalovtimecompsims"><code class="name flex">
+<span>def <span class="ident">plothalovtimecompsims</span></span>(<span>haloid, x_func, v_func, sims, sim_names, title, x_label, y_label, yscale='log')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plots a graph of halo data as a function of time for each simulation.</p>
+<div class="admonition deprecated">
+<p class="admonition-title">Deprecated since version:&ensp;0.0.0</p>
+<p>plothalovtimecompsims uses the outdated data format of a list of
+Snapshot instances.
+This results in inaccurate tracking of halos through time.
+Instead, plotting should be done manually, with data obtained via the
+ahfhalotools.objects.Cluster object</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plothalovtimecompsims(haloid,x_func,v_func,sims,sim_names,title,x_label,y_label,yscale=&#34;log&#34;):
+    &#34;&#34;&#34;
+    Plots a graph of halo data as a function of time for each simulation.
+
+    .. deprecated:: 0.0.0
+        plothalovtimecompsims uses the outdated data format of a list of
+        Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_func is lambda that takes halo and returns halodata being plotted
+    #sims is an array of arrays of snaps corresponding to each simulation
+    fig,ax = plt.subplots(1,1,figsize=(9,6))
+    fig.suptitle(title,wrap=True)
+
+    #ax[row,col].set_xscale(&#34;log&#34;)
+    ax.set_yscale(yscale)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+
+    for i in range(len(sims)):
+        snapshots = sims[i]
+        zs = np.array([snapshot.z for snapshot in snapshots])
+        #NOTE: above line is not very efficient, if scaled to more data just
+        #    give z arrays in arguments of function
+        x = x_func(zs)
+        y = [v_func(snap.halos[haloid]) for snap in snapshots]
+        ax.plot(x,y, label=sim_names[i])
+
+        ax.legend()
+    plt.tight_layout()
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.plotting.snapsplot.plothalovtimecompsims_radinterp"><code class="name flex">
+<span>def <span class="ident">plothalovtimecompsims_radinterp</span></span>(<span>ax, haloid, x_func, v_func, sims, sim_names, title, x_label, y_label, radius)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Takes a matplotlib.Axes.axes object and plots onto it a piece of profile
+data, interpolated at a specified radius, as a function of time, for each
+simulation.</p>
+<div class="admonition deprecated">
+<p class="admonition-title">Deprecated since version:&ensp;0.0.0</p>
+<p>plothalovtimecompsims_radinterp uses the outdated data format of a list
+of Snapshot instances.
+This results in inaccurate tracking of halos through time.
+Instead, plotting should be done manually, with data obtained via the
+ahfhalotools.objects.Cluster object</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plothalovtimecompsims_radinterp(ax, haloid,x_func,v_func,sims,sim_names,title,x_label,y_label,radius):
+    &#34;&#34;&#34;
+    Takes a matplotlib.Axes.axes object and plots onto it a piece of profile
+    data, interpolated at a specified radius, as a function of time, for each
+    simulation.
+
+    .. deprecated:: 0.0.0
+        plothalovtimecompsims_radinterp uses the outdated data format of a list
+        of Snapshot instances.
+        This results in inaccurate tracking of halos through time.
+        Instead, plotting should be done manually, with data obtained via the
+        ahfhalotools.objects.Cluster object
+    &#34;&#34;&#34;
+    #ax is axis object that is plotted onto
+    #x_func is lambda that takes array of zs and returns x-values to plot against
+    #v_func is lambda that takes halo and returns array of value in question as a
+    #  function of **radius**
+    #sims is an array of arrays of snaps corresponding to each simulation
+    ax.set_yscale(&#34;log&#34;)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(title)
+
+    for i in range(len(sims)):
+        snapshots = sims[i]
+        zs = np.array([snapshot.z for snapshot in snapshots])
+        #NOTE: above line is not very efficient, if scaled to more data just
+        #    give z arrays in arguments of function
+        x = x_func(zs)
+        y = analysis.getAsFuncOfTimeAtRadius(snapshots,haloid,v_func,radius)
+        ax.plot(x,y, label=sim_names[i])
+
+        ax.legend()</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ahfhalotools.plotting" href="index.html">ahfhalotools.plotting</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="ahfhalotools.plotting.snapsplot.plot1halovtimecompfuncs" href="#ahfhalotools.plotting.snapsplot.plot1halovtimecompfuncs">plot1halovtimecompfuncs</a></code></li>
+<li><code><a title="ahfhalotools.plotting.snapsplot.plot4halocb" href="#ahfhalotools.plotting.snapsplot.plot4halocb">plot4halocb</a></code></li>
+<li><code><a title="ahfhalotools.plotting.snapsplot.plot4halovtime" href="#ahfhalotools.plotting.snapsplot.plot4halovtime">plot4halovtime</a></code></li>
+<li><code><a title="ahfhalotools.plotting.snapsplot.plot4halovtimeradinterp" href="#ahfhalotools.plotting.snapsplot.plot4halovtimeradinterp">plot4halovtimeradinterp</a></code></li>
+<li><code><a title="ahfhalotools.plotting.snapsplot.plothalovtimecompsims" href="#ahfhalotools.plotting.snapsplot.plothalovtimecompsims">plothalovtimecompsims</a></code></li>
+<li><code><a title="ahfhalotools.plotting.snapsplot.plothalovtimecompsims_radinterp" href="#ahfhalotools.plotting.snapsplot.plothalovtimecompsims_radinterp">plothalovtimecompsims_radinterp</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

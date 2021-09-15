@@ -1,0 +1,1671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>ahfhalotools.filetools API documentation</title>
+<meta name="description" content="A collection of methods useful for dealing with AHF files, including automatic
+snapshot to redshift mapping from filenames, reading multiple clusters …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ahfhalotools.filetools</code></h1>
+</header>
+<section id="section-intro">
+<p>A collection of methods useful for dealing with AHF files, including automatic
+snapshot to redshift mapping from filenames, reading multiple clusters at once,
+and file truncation.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+A collection of methods useful for dealing with AHF files, including automatic
+snapshot to redshift mapping from filenames, reading multiple clusters at once,
+and file truncation.
+&#34;&#34;&#34;
+
+import os
+import numpy as np
+from . import objects as obj
+from . import analysis
+import string
+
+def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
+                  haloFileExt = &#34;.AHF_halos&#34;,profileFileExt = &#34;.AHF_profiles&#34;,
+                  mtreeidxExt = &#34;.AHF_mtree_idx&#34;, mtreeExt = &#34;.AHF_mtree&#34;, skipmtree = False):
+    &#34;&#34;&#34;
+    Truncates sets of AHF data files for a single cluster such as to shorten
+    load times.
+
+    Parameters
+    ----------
+    fileNameBase : str
+        The format string of the base file name of the files to be truncated
+        (including path)
+        e.g. &#34;./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}&#34;
+        For specifics on formatting see notes section below.
+    snaps : list of int
+        snapshot numbers of files to load
+    zs : list of float
+        redshifts of snapshots corresponding to snapshot numbers in snaps
+    outputFileNameBase : str
+        The format string of the output file. Formatted the same as
+        fileNameBase
+    numHalos : int
+        The number of halos to truncate the files to
+
+    Other Parameters
+    ----------------
+    haloFileExt : str, default = &#34;.AHF_halos&#34;
+        File extension to use for AHF_halos files
+    profileFileExt : str, default = &#34;.AHF_profiles&#34;
+        File extension to use for AHF_profiles files
+    mtreeidxExt : str, default = &#34;.AHF_mtree_idx&#34;
+        File extension to use for AHF_mtree_idx files
+    mtreeExt : str, default = &#34;.AHF_mtree&#34;
+        File extension to use for AHF_mtree files
+    skipmtree : bool, default = False
+        Whether to skip reading the .AHF_mtree file. Useful when the mtree
+        file is in the non-supported SUSSING-2013 format
+
+    See Also
+    --------
+    truncateClusters : truncates files from multiple clusters at once
+
+    Notes
+    -----
+    File names are generated using the python str.format() method, specifically
+    as: fileNameBase.format(snap = snapNum, z = z)
+
+    So in the example:
+    &#34;./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}&#34;,
+    {snap:0=3d} will be replaced with the snapshot number, including leading
+    zeroes to make snapshot number 3 characters, and {z:.3f} will be replaced
+    with the redshift to 3 decimal places.
+
+    So if the file being read is for snapshot 97 with redshift 0.986, the file
+    base name (without extensions added) will be:
+    &#34;./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_097.z0.986&#34;
+    &#34;&#34;&#34;
+    if len(zs) != len(snaps):
+        raise ValueError(&#34;snaps and zs are not of same length!&#34;)
+
+    numFiles = len(zs)
+
+    #loop through snapshots
+    for i in range(numFiles):
+        try:
+            fileName = fileNameBase.format(snap=snaps[i],z=zs[i])
+        except KeyError as err:
+            raise ValueError(&#34;fileNameBase is not properly formatted! String&#34;\
+                            &#34; contains a key that is not z or snap&#34;) from err
+        try:
+            outName = outputFileNameBase.format(snap = snaps[i],z = zs[i])
+        except KeyError as err:
+            raise ValueError(&#34;outName is not properly formatted! String&#34;\
+                            &#34; contains a key that is not z or snap&#34;) from err
+
+        print(&#34;About to truncate {0}:&#34;.format(fileName))
+        #truncate profiles and halos files
+
+        snap = obj.Snapshot(snaps[i],zs[i],fileName+haloFileExt,
+                        fileName+profileFileExt, haloLimit = numHalos)
+        snap.writeFiles(outName)
+        print(&#34;    Profiles and Halos done&#34;)
+
+        #truncate mtree_idx file
+        try:
+            mtreeidxrows = np.genfromtxt(fileName + mtreeidxExt, max_rows = numHalos)
+
+            #check if mtreeidxrows is 1D and make it 2D if so
+            if mtreeidxrows.ndim == 1:
+                mtreeidxrows = np.array([mtreeidxrows])
+            np.savetxt(outName + mtreeidxExt,mtreeidxrows,fmt=&#39;%d&#39;)
+            print(&#34;    mtree_idx done&#34;)
+        except IOError:
+            print(&#34;    WARNING: mtree_idx file not found&#34;)
+
+        #truncate mtree file
+        if not skipmtree:
+            try:
+                mtreerows = np.genfromtxt(fileName + mtreeExt)
+                if len(mtreerows[0]) == 3:
+                    #non sussing format
+                    #loop through rows to check how many rows need to be written to new file
+                    haloCounter = 0
+                    lineCounter = 0
+                    while haloCounter &lt; numHalos:
+                        haloID, haloPart, numProg = mtreerows[lineCounter,:]
+                        lineCounter += int(numProg)+1
+                        haloCounter += 1
+                    #lineCounter is now equal to the number of lines that we care about
+                    np.savetxt(outName+mtreeExt,mtreerows[0:lineCounter,:],fmt=&#39;%d&#39;)
+                    print(&#34;    mtree done&#34;)
+                else:
+                    #wrong format
+                    print(&#34;    WARNING: mtree is not correct format!&#34;)
+            except IOError:
+                print(&#34;    WARNING: mtree file not found&#34;)
+            except ValueError:
+                print(&#34;    WARNING: mtree is not of correct format! It may be in SUSSING-2013 format, which is not supported&#34;)
+        print(&#34;Completed truncation: {0:.1f}%&#34;.format((i+1)/numFiles * 100))
+
+def getSnapNumToZMapGX(directory=&#34;&#34;):
+    &#34;&#34;&#34;
+    Searches directory specified and returns a map of snapshot number to
+    redshift.
+
+    Assumes file names are of format GadgetX-NewMDCLUSTER_0001.snap_119.z0.221...
+    Directory must only contain files with names of this format.
+
+    Parameters
+    ----------
+    directory : str
+        Directory to search. If not specified, defaults to current directory.
+
+    Returns
+    -------
+    snapNumToZMap : dict { int snapNum : float z }
+
+    See also
+    --------
+    getSnapNumToZMapGiz : Gets snapshot number to redshift map for GIZMO files
+    getMusZs : Gets list of redshifts of Gadget-MUSIC files in directory
+    &#34;&#34;&#34;
+    files = os.listdir(directory)
+    #assuming file name is of format GadgetX-NewMDCLUSTER_0001.snap_119.z0.221...
+    #returns dictionary of {snapNo:z}
+    zDict = dict()
+    for file in files:
+        try:
+            zDict[int(file[31:34])] = float(file[36:41])
+        except ValueError:
+            pass
+    return zDict
+
+def getSnapNumToZMapGiz(directory=&#34;&#34;):
+    &#34;&#34;&#34;
+    Searches directory specified and returns a map of snapshot number to
+    redshift.
+
+    Assumes file names are of format GIZMO-NewMDCLUSTER_0001.snap_119.z0.221...
+    Directory must only contain files with names of this format.
+
+    Parameters
+    ----------
+    directory : str
+        Directory to search. If not specified, defaults to current directory.
+
+    Returns
+    -------
+    snapNumToZMap : dict { int snapNum : float z }
+
+    See also
+    --------
+    getSnapNumToZMapGX : Gets snapshot number to redshift map for GadgetX files
+    getMusZs : Gets list of redshifts of Gadget-MUSIC files in directory
+    &#34;&#34;&#34;
+    files = os.listdir(directory)
+    #assuming file name is of format GIZMO-NewMDCLUSTER_0001.snap_119.z0.221...
+    #returns dictionary of {snapNo:z}
+    zDict = dict()
+    for file in files:
+        try:
+            zDict[int(file[29:32])] = float(file[34:39])
+        except ValueError:
+            pass
+    return zDict
+
+def getMusZs(directory=&#34;&#34;):
+    &#34;&#34;&#34;
+    Searches directory specified and returns a list of redshifts for GadgetMUSIC
+    snapshots.
+
+    Assumes file names are of format GadgetMUSIC-NewMDCLUSTER_0001.z0.000...
+    Directory must only contain files with names of this format.
+
+    Parameters
+    ----------
+    directory : str
+        Directory to search. If not specified, defaults to current directory.
+
+    Returns
+    -------
+    zs : list of floats
+        Redshifts in descending order
+
+    See also
+    --------
+    getSnapNumToZMapGX : Gets snapshot number to redshift map for GadgetX files
+    getSnapNumToZMapGiz : Gets snapshot number to redshift map for GIZMO files
+    &#34;&#34;&#34;
+    files = os.listdir(directory)
+    #assuming file name is of format GadgetMUSIC-NewMDCLUSTER_0001.z0.000...
+    zs = set()
+    for file in files:
+        if file[30] == &#34;z&#34;:
+            try:
+                zs.add( float(file[31:36]) )
+            except ValueError:
+                pass
+    zs = list(zs)
+    #sort list such that in descending order
+    zs.sort(reverse=True)
+    return zs
+
+def getZfromFileName(fileName, suppress = False):
+    &#34;&#34;&#34;
+    Lifts a redshift from a file name.
+
+    Assumes file names are formatted as &#34;...zX.XXX...&#34; where X.XXX is the
+    redshift.
+
+    Parameters
+    ----------
+    fileName : str
+    suppress : bool, default = False
+        Whether or not to suppress error messages. If no single redshift is
+        found and suppress is True, will return None
+
+    Returns
+    -------
+    z : float
+    &#34;&#34;&#34;
+    #first we find where all of the &#34;z&#34; characters are in the name
+    zIndexes = [pos for pos, char in enumerate(fileName) if char == &#39;z&#39;]
+    zs = list()
+    for zIndex in zIndexes:
+        try:
+            zs.append( float(fileName[zIndex+1:zIndex+6]) )
+        except ValueError:
+            #bit of string after the z is not a number
+            pass
+    if len(zs) == 0:
+        msg = &#34;Could not find a redshift in file name {0}\nPlease check the name is formatted as &#39;...zX.XXX...&#39;&#34;.format(fileName)
+        if not suppress:
+            raise ValueError(msg)
+        else:
+            return
+    elif len(zs) &gt; 1:
+        msg = &#34;Found multiple redshifts in file name {0}&#34;.format(fileName)
+        if not suppress:
+            raise ValueError(msg)
+        else:
+            return
+    return zs[0]
+
+def getZs(directory, num = -1):
+    &#34;&#34;&#34;
+    Gets the redshifts of the snapshot files in a folder in descending order
+
+    Parameters
+    ----------
+    directory : str
+        The directory to search
+    num : int, optional
+        Specifies how many redshifts to return. Will return the first num
+        redshifts starting from redshift 0
+        If not specified will return all redshifts found
+
+    Returns
+    -------
+    zs : list of float
+        The redshifts of the files in the directory in descending order.
+    &#34;&#34;&#34;
+    #get list of all redshifts in folder
+    files = os.listdir(directory)
+    zs = list(set([getZfromFileName(file, suppress = True) for file in files if getZfromFileName(file, suppress = True) != None]))
+    zs.sort(reverse=True)
+    #we want redshifts in descending order as snapNos should be ascending
+    #only want num redshifts if specified
+    if num != -1 and not num &gt; len(zs):
+        zs = zs[-num:]
+    return zs
+
+class SafeFormatter(string.Formatter):
+    &#34;&#34;&#34;
+    A string formatter used to preserve unused keys.
+
+    Taken from https://stackoverflow.com/a/34033230
+    &#34;&#34;&#34;
+    def vformat(self, format_string, args, kwargs):
+        args_len = len(args)  # for checking IndexError
+        tokens = []
+        for (lit, name, spec, conv) in self.parse(format_string):
+            # re-escape braces that parse() unescaped
+            lit = lit.replace(&#39;{&#39;, &#39;{{&#39;).replace(&#39;}&#39;, &#39;}}&#39;)
+            # only lit is non-None at the end of the string
+            if name is None:
+                tokens.append(lit)
+            else:
+                # but conv and spec are None if unused
+                conv = &#39;!&#39; + conv if conv else &#39;&#39;
+                spec = &#39;:&#39; + spec if spec else &#39;&#39;
+                # name includes indexing ([blah]) and attributes (.blah)
+                # so get just the first part
+                fp = name.split(&#39;[&#39;)[0].split(&#39;.&#39;)[0]
+                # treat as normal if fp is empty (an implicit
+                # positional arg), a digit (an explicit positional
+                # arg) or if it is in kwargs
+                if not fp or fp.isdigit() or fp in kwargs:
+                    tokens.extend([lit, &#39;{&#39;, name, conv, spec, &#39;}&#39;])
+                # otherwise escape the braces
+                else:
+                    tokens.extend([lit, &#39;{{&#39;, name, conv, spec, &#39;}}&#39;])
+        format_string = &#39;&#39;.join(tokens)  # put the string back together
+        # finally call the default formatter
+        return string.Formatter.vformat(self, format_string, args, kwargs)
+
+def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;,
+                 directory = &#34;&#34;, fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}&#34;,
+                 profileExt=&#34;.AHF_profiles&#34;, haloExt=&#34;.AHF_halos&#34;,
+                 mtreeidxExt=&#34;.AHF_mtree_idx&#34;, mtreeExt=&#34;.AHF_mtree&#34;, haloLimit=np.inf,
+                 printProgress = False, skipmtree = False):
+    &#34;&#34;&#34;
+    Loads multiple cluster simulations into memory.
+
+    Parameters
+    ----------
+    clusterNums : list of int
+        The list of cluster numbers to load
+    snapNums : list of int
+        The list of snapshot numbers to load from each cluster in _ascending_
+        order. Should not contain any breaks and should include the snapshot
+        with z = 0.000
+    simName : str
+        The name of the simulation code to be inserted into file names
+        (e.g. &#34;GadgetX&#34;, &#34;GadgetMUSIC&#34;)
+    directory : str, optional
+        The directory the cluster folders are in. If not specified will search
+        from current directory.
+    clusterFolderFmt : str, optional
+        The string format used to determine the names of the clusters&#39; folders
+        Defaults to &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        See notes section for formatting of file strings
+    fileBaseFmt : str, optional
+        The format of the file name for the AHF files
+        Defaults to &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+            _{snap:0=3d}.z{z:.3f}&#34;
+
+    Other Parameters
+    ----------------
+    profileExt : str, optional
+        Defaults to &#34;.AHF_profiles&#34;
+    haloExt : str, optional
+        Defaults to &#34;.AHF_halos&#34;
+    mtreeidxExt : str, optional
+        Defaults to &#34;.AHF_mtree_idx&#34;
+    mtreeExt : str, optional
+        Defaults to &#34;.AHF_mtree&#34;
+    haloLimit : int, optional
+        Specifies the maximum number of halos to load into memory
+    skipmtree : bool, optional
+        Defaults to False
+        If True, will skip trying to read mtree files, avoiding the warning
+        message spam if no mtree files are present.
+    printProgress : bool, optional
+        Defaults to False
+        If True, will print updates on loading progress
+
+    Returns
+    -------
+    clusters : list of ahfhalotools.objects.Cluster instances
+        The list of clusters corresponding to each of the clusters specified
+        in clusterNums
+
+    See Also
+    --------
+    truncateClusters : truncates files for a set of clusters
+    ahfhalotools.objects.Cluster : Stores information about a cluster
+
+    Notes
+    -----
+    The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+    formatted using the str.format method to produce the correct file names.
+    The appropriate keys are:
+        clusterNum : the number of the cluster
+        simName : the name of the simulation code
+        snap : the snapshot number
+        z : the redshift
+
+    For example, if the following set of parameters is passed into the function:
+        directory = &#34;/home/{simName}/&#34;
+        clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+                       p_{snap:0=3d}.z{z:.3f}&#34;
+        simName = &#34;GadgetX&#34;
+    With default file name extensions, when loading cluster 34, snapshot number
+    99 with z = 0.9 (for example), the following files will be opened:
+
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree
+    &#34;&#34;&#34;
+    if not directory.endswith(&#34;/&#34;):
+        directory += &#34;/&#34;
+    if not clusterFolderFmt.endswith(&#34;/&#34;):
+        clusterFolderFmt += &#34;/&#34;
+
+    fmt = SafeFormatter()
+    numClusters = len(clusterNums)
+
+    clusters = []
+    for i, clusterNum in enumerate(clusterNums):
+
+        #input relevant fields for file names
+        inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
+        fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        #check if cluster directory exists, if not the cluster may have been
+        #skipped during truncation, so we skip loading cluster and print a
+        #warning
+        if not os.path.isdir(inputDir):
+            print(&#34;WARNING: Non-existent cluster data:\n{0}&#34;.format(inputDir))
+            continue
+        #get redshifts in folder
+        zs = getZs(inputDir, num = len(snapNums))
+
+        #check if folder is empty
+        if len(zs) == 0:
+            print(&#34;WARNING: Non-existent cluster data:\n{0}&#34;.format(inputDir))
+            continue
+
+        cluster = obj.Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
+                          haloExt = haloExt, mtreeidxExt = mtreeidxExt,
+                          mtreeExt = mtreeExt, haloLimit = haloLimit,
+                          clusterNum = clusterNum, simName = simName,
+                          skipmtree = skipmtree)
+        clusters.append(cluster)
+        if printProgress:
+            print(&#34;Loaded {0} cluster {1:0=4d}: {2:.1f}%&#34;.format(simName,clusterNum,(i+1)/numClusters * 100))
+    if printProgress:
+        print(&#34;\nLoading for {0} complete.\n&#34;.format(simName))
+    return clusters
+
+def truncateClusters(clusterNums, snapNums, simName, haloLimit, outputDir,
+                     clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;,
+                     directory = &#34;&#34;, fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}&#34;,
+                     profileExt=&#34;.AHF_profiles&#34;, haloExt=&#34;.AHF_halos&#34;,
+                     mtreeidxExt=&#34;.AHF_mtree_idx&#34;, mtreeExt=&#34;.AHF_mtree&#34;,
+                     skipmtree = False):
+    &#34;&#34;&#34;
+    Truncates files from multiple cluster folders at once
+
+    Parameters
+    ----------
+    clusterNums : list of int
+        The list of cluster numbers to load
+    snapNums : list of int
+        The list of snapshot numbers to load from each cluster in _ascending_
+        order. Should not contain any breaks and should include the snapshot
+        with z = 0.000
+    simName : str
+        The name of the simulation code to be inserted into file names
+        (e.g. &#34;GadgetX&#34;, &#34;GadgetMUSIC&#34;)
+    haloLimit : int
+        The number of halos to truncate to
+    outputDir : str
+        The directory to put the truncated files in. The file hierarchy will
+        look the same as in the original data set.
+    directory : str, optional
+        The directory the cluster folders are in. If not specified will search
+        from current directory.
+    clusterFolderFmt : str, optional
+        The string format used to determine the names of the clusters&#39; folders
+        Defaults to &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        See notes section for formatting of file strings
+    fileBaseFmt : str, optional
+        The format of the file name for the AHF files
+        Defaults to &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+            _{snap:0=3d}.z{z:.3f}&#34;
+    skipmtree : bool, default = False
+        Whether to skip reading the .AHF_mtree file. Useful if the mtree files
+        are in the non-supported SUSSING-2013 format
+
+    Other Parameters
+    ----------------
+    profileExt : str, optional
+        Defaults to &#34;.AHF_profiles&#34;
+    haloExt : str, optional
+        Defaults to &#34;.AHF_halos&#34;
+    mtreeidxExt : str, optional
+        Defaults to &#34;.AHF_mtree_idx&#34;
+    mtreeExt : str, optional
+        Defaults to &#34;.AHF_mtree&#34;
+
+    See Also
+    --------
+    loadClusters : loads files for a set of clusters
+    truncateFiles : truncates files for a single cluster
+    ahfhalotools.objects.Cluster : Stores information about a cluster
+
+    Notes
+    -----
+    The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+    formatted using the str.format method to produce the correct file names.
+    The appropriate keys are:
+        clusterNum : the number of the cluster
+        simName : the name of the simulation code
+        snap : the snapshot number
+        z : the redshift
+
+    For example, if the following set of parameters is passed into the function:
+        directory = &#34;/home/{simName}/&#34;
+        clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+                       p_{snap:0=3d}.z{z:.3f}&#34;
+        simName = &#34;GadgetX&#34;
+    With default file name extensions, when loading cluster 34, snapshot number
+    99 with z = 0.9 (for example), the following files will be opened:
+
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree
+    &#34;&#34;&#34;
+    if not directory.endswith(&#34;/&#34;):
+        directory += &#34;/&#34;
+    if not clusterFolderFmt.endswith(&#34;/&#34;):
+        clusterFolderFmt += &#34;/&#34;
+    if not outputDir.endswith(&#34;/&#34;):
+        outputDir += &#34;/&#34;
+
+    numClusters = len(clusterNums)
+    #using safe formatter to retain unused keys
+    fmt = SafeFormatter()
+
+    for i, clusterNum in enumerate(clusterNums):
+        #format file base name with cluster number and simulation name
+        inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
+        fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        outputFileNameBase = fmt.format(outputDir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+
+        outputClusterDir = fmt.format(outputDir + clusterFolderFmt, clusterNum=clusterNum, simName=simName)
+        outputDirFmtted = fmt.format(outputDir, clusterNum=clusterNum, simName=simName)
+
+        zs = getZs(inputDir, num = len(snapNums))
+
+        #check if output files exist already, if not create them
+        if not os.path.isdir(outputDirFmtted):
+            os.mkdir(outputDirFmtted)
+        if not os.path.isdir(outputClusterDir):
+            os.mkdir(outputClusterDir)
+
+        #truncate files for cluster
+        try:
+            truncateFiles(fileBaseName,snapNums,zs,outputFileNameBase,haloLimit,
+                              haloFileExt = haloExt,profileFileExt = profileExt,
+                              mtreeidxExt = mtreeidxExt, mtreeExt = mtreeExt,
+                              skipmtree = skipmtree)
+            print(&#34;\n===CLUSTER {0} DONE===    Overall Completion: {1:.1f}%\n&#34;.format(clusterNum, (i+1)/numClusters * 100))
+        except OSError:
+            print(&#34;\n\n===WARNING===\nAn error was encountered while reading the&#34;\
+                  &#34; data from Cluster {0}. Cluster will be skipped. Be sure to &#34;\
+                  &#34;check your data!\n\n&#34;.format(clusterNum))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="ahfhalotools.filetools.getMusZs"><code class="name flex">
+<span>def <span class="ident">getMusZs</span></span>(<span>directory='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Searches directory specified and returns a list of redshifts for GadgetMUSIC
+snapshots.</p>
+<p>Assumes file names are of format GadgetMUSIC-NewMDCLUSTER_0001.z0.000&hellip;
+Directory must only contain files with names of this format.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>directory</code></strong> :&ensp;<code>str</code></dt>
+<dd>Directory to search. If not specified, defaults to current directory.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>zs</code></strong> :&ensp;<code>list</code> of <code>floats</code></dt>
+<dd>Redshifts in descending order</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="ahfhalotools.filetools.getSnapNumToZMapGX" href="#ahfhalotools.filetools.getSnapNumToZMapGX">getSnapNumToZMapGX()</a></code></dt>
+<dd>Gets snapshot number to redshift map for GadgetX files</dd>
+<dt><code><a title="ahfhalotools.filetools.getSnapNumToZMapGiz" href="#ahfhalotools.filetools.getSnapNumToZMapGiz">getSnapNumToZMapGiz()</a></code></dt>
+<dd>Gets snapshot number to redshift map for GIZMO files</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getMusZs(directory=&#34;&#34;):
+    &#34;&#34;&#34;
+    Searches directory specified and returns a list of redshifts for GadgetMUSIC
+    snapshots.
+
+    Assumes file names are of format GadgetMUSIC-NewMDCLUSTER_0001.z0.000...
+    Directory must only contain files with names of this format.
+
+    Parameters
+    ----------
+    directory : str
+        Directory to search. If not specified, defaults to current directory.
+
+    Returns
+    -------
+    zs : list of floats
+        Redshifts in descending order
+
+    See also
+    --------
+    getSnapNumToZMapGX : Gets snapshot number to redshift map for GadgetX files
+    getSnapNumToZMapGiz : Gets snapshot number to redshift map for GIZMO files
+    &#34;&#34;&#34;
+    files = os.listdir(directory)
+    #assuming file name is of format GadgetMUSIC-NewMDCLUSTER_0001.z0.000...
+    zs = set()
+    for file in files:
+        if file[30] == &#34;z&#34;:
+            try:
+                zs.add( float(file[31:36]) )
+            except ValueError:
+                pass
+    zs = list(zs)
+    #sort list such that in descending order
+    zs.sort(reverse=True)
+    return zs</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.filetools.getSnapNumToZMapGX"><code class="name flex">
+<span>def <span class="ident">getSnapNumToZMapGX</span></span>(<span>directory='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Searches directory specified and returns a map of snapshot number to
+redshift.</p>
+<p>Assumes file names are of format GadgetX-NewMDCLUSTER_0001.snap_119.z0.221&hellip;
+Directory must only contain files with names of this format.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>directory</code></strong> :&ensp;<code>str</code></dt>
+<dd>Directory to search. If not specified, defaults to current directory.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>snapNumToZMap</code></strong> :&ensp;<code>dict { int snapNum : float z }</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="ahfhalotools.filetools.getSnapNumToZMapGiz" href="#ahfhalotools.filetools.getSnapNumToZMapGiz">getSnapNumToZMapGiz()</a></code></dt>
+<dd>Gets snapshot number to redshift map for GIZMO files</dd>
+<dt><code><a title="ahfhalotools.filetools.getMusZs" href="#ahfhalotools.filetools.getMusZs">getMusZs()</a></code></dt>
+<dd>Gets list of redshifts of Gadget-MUSIC files in directory</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getSnapNumToZMapGX(directory=&#34;&#34;):
+    &#34;&#34;&#34;
+    Searches directory specified and returns a map of snapshot number to
+    redshift.
+
+    Assumes file names are of format GadgetX-NewMDCLUSTER_0001.snap_119.z0.221...
+    Directory must only contain files with names of this format.
+
+    Parameters
+    ----------
+    directory : str
+        Directory to search. If not specified, defaults to current directory.
+
+    Returns
+    -------
+    snapNumToZMap : dict { int snapNum : float z }
+
+    See also
+    --------
+    getSnapNumToZMapGiz : Gets snapshot number to redshift map for GIZMO files
+    getMusZs : Gets list of redshifts of Gadget-MUSIC files in directory
+    &#34;&#34;&#34;
+    files = os.listdir(directory)
+    #assuming file name is of format GadgetX-NewMDCLUSTER_0001.snap_119.z0.221...
+    #returns dictionary of {snapNo:z}
+    zDict = dict()
+    for file in files:
+        try:
+            zDict[int(file[31:34])] = float(file[36:41])
+        except ValueError:
+            pass
+    return zDict</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.filetools.getSnapNumToZMapGiz"><code class="name flex">
+<span>def <span class="ident">getSnapNumToZMapGiz</span></span>(<span>directory='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Searches directory specified and returns a map of snapshot number to
+redshift.</p>
+<p>Assumes file names are of format GIZMO-NewMDCLUSTER_0001.snap_119.z0.221&hellip;
+Directory must only contain files with names of this format.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>directory</code></strong> :&ensp;<code>str</code></dt>
+<dd>Directory to search. If not specified, defaults to current directory.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>snapNumToZMap</code></strong> :&ensp;<code>dict { int snapNum : float z }</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="ahfhalotools.filetools.getSnapNumToZMapGX" href="#ahfhalotools.filetools.getSnapNumToZMapGX">getSnapNumToZMapGX()</a></code></dt>
+<dd>Gets snapshot number to redshift map for GadgetX files</dd>
+<dt><code><a title="ahfhalotools.filetools.getMusZs" href="#ahfhalotools.filetools.getMusZs">getMusZs()</a></code></dt>
+<dd>Gets list of redshifts of Gadget-MUSIC files in directory</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getSnapNumToZMapGiz(directory=&#34;&#34;):
+    &#34;&#34;&#34;
+    Searches directory specified and returns a map of snapshot number to
+    redshift.
+
+    Assumes file names are of format GIZMO-NewMDCLUSTER_0001.snap_119.z0.221...
+    Directory must only contain files with names of this format.
+
+    Parameters
+    ----------
+    directory : str
+        Directory to search. If not specified, defaults to current directory.
+
+    Returns
+    -------
+    snapNumToZMap : dict { int snapNum : float z }
+
+    See also
+    --------
+    getSnapNumToZMapGX : Gets snapshot number to redshift map for GadgetX files
+    getMusZs : Gets list of redshifts of Gadget-MUSIC files in directory
+    &#34;&#34;&#34;
+    files = os.listdir(directory)
+    #assuming file name is of format GIZMO-NewMDCLUSTER_0001.snap_119.z0.221...
+    #returns dictionary of {snapNo:z}
+    zDict = dict()
+    for file in files:
+        try:
+            zDict[int(file[29:32])] = float(file[34:39])
+        except ValueError:
+            pass
+    return zDict</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.filetools.getZfromFileName"><code class="name flex">
+<span>def <span class="ident">getZfromFileName</span></span>(<span>fileName, suppress=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Lifts a redshift from a file name.</p>
+<p>Assumes file names are formatted as "&hellip;zX.XXX&hellip;" where X.XXX is the
+redshift.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>fileName</code></strong> :&ensp;<code>str</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>suppress</code></strong> :&ensp;<code>bool</code>, default <code>= False</code></dt>
+<dd>Whether or not to suppress error messages. If no single redshift is
+found and suppress is True, will return None</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>z</code></strong> :&ensp;<code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getZfromFileName(fileName, suppress = False):
+    &#34;&#34;&#34;
+    Lifts a redshift from a file name.
+
+    Assumes file names are formatted as &#34;...zX.XXX...&#34; where X.XXX is the
+    redshift.
+
+    Parameters
+    ----------
+    fileName : str
+    suppress : bool, default = False
+        Whether or not to suppress error messages. If no single redshift is
+        found and suppress is True, will return None
+
+    Returns
+    -------
+    z : float
+    &#34;&#34;&#34;
+    #first we find where all of the &#34;z&#34; characters are in the name
+    zIndexes = [pos for pos, char in enumerate(fileName) if char == &#39;z&#39;]
+    zs = list()
+    for zIndex in zIndexes:
+        try:
+            zs.append( float(fileName[zIndex+1:zIndex+6]) )
+        except ValueError:
+            #bit of string after the z is not a number
+            pass
+    if len(zs) == 0:
+        msg = &#34;Could not find a redshift in file name {0}\nPlease check the name is formatted as &#39;...zX.XXX...&#39;&#34;.format(fileName)
+        if not suppress:
+            raise ValueError(msg)
+        else:
+            return
+    elif len(zs) &gt; 1:
+        msg = &#34;Found multiple redshifts in file name {0}&#34;.format(fileName)
+        if not suppress:
+            raise ValueError(msg)
+        else:
+            return
+    return zs[0]</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.filetools.getZs"><code class="name flex">
+<span>def <span class="ident">getZs</span></span>(<span>directory, num=-1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the redshifts of the snapshot files in a folder in descending order</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>directory</code></strong> :&ensp;<code>str</code></dt>
+<dd>The directory to search</dd>
+<dt><strong><code>num</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Specifies how many redshifts to return. Will return the first num
+redshifts starting from redshift 0
+If not specified will return all redshifts found</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>zs</code></strong> :&ensp;<code>list</code> of <code>float</code></dt>
+<dd>The redshifts of the files in the directory in descending order.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getZs(directory, num = -1):
+    &#34;&#34;&#34;
+    Gets the redshifts of the snapshot files in a folder in descending order
+
+    Parameters
+    ----------
+    directory : str
+        The directory to search
+    num : int, optional
+        Specifies how many redshifts to return. Will return the first num
+        redshifts starting from redshift 0
+        If not specified will return all redshifts found
+
+    Returns
+    -------
+    zs : list of float
+        The redshifts of the files in the directory in descending order.
+    &#34;&#34;&#34;
+    #get list of all redshifts in folder
+    files = os.listdir(directory)
+    zs = list(set([getZfromFileName(file, suppress = True) for file in files if getZfromFileName(file, suppress = True) != None]))
+    zs.sort(reverse=True)
+    #we want redshifts in descending order as snapNos should be ascending
+    #only want num redshifts if specified
+    if num != -1 and not num &gt; len(zs):
+        zs = zs[-num:]
+    return zs</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.filetools.loadClusters"><code class="name flex">
+<span>def <span class="ident">loadClusters</span></span>(<span>clusterNums, snapNums, simName, clusterFolderFmt='NewMDCLUSTER_{clusterNum:0=4d}/', directory='', fileBaseFmt='{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}', profileExt='.AHF_profiles', haloExt='.AHF_halos', mtreeidxExt='.AHF_mtree_idx', mtreeExt='.AHF_mtree', haloLimit=inf, printProgress=False, skipmtree=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Loads multiple cluster simulations into memory.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>clusterNums</code></strong> :&ensp;<code>list</code> of <code>int</code></dt>
+<dd>The list of cluster numbers to load</dd>
+<dt><strong><code>snapNums</code></strong> :&ensp;<code>list</code> of <code>int</code></dt>
+<dd>The list of snapshot numbers to load from each cluster in <em>ascending</em>
+order. Should not contain any breaks and should include the snapshot
+with z = 0.000</dd>
+<dt><strong><code>simName</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the simulation code to be inserted into file names
+(e.g. "GadgetX", "GadgetMUSIC")</dd>
+<dt><strong><code>directory</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The directory the cluster folders are in. If not specified will search
+from current directory.</dd>
+<dt><strong><code>clusterFolderFmt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The string format used to determine the names of the clusters' folders
+Defaults to "NewMDCLUSTER_{clusterNum:0=4d}/"
+See notes section for formatting of file strings</dd>
+<dt><strong><code>fileBaseFmt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The format of the file name for the AHF files
+Defaults to "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+_{snap:0=3d}.z{z:.3f}"</dd>
+</dl>
+<h2 id="other-parameters">Other Parameters</h2>
+<dl>
+<dt><strong><code>profileExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_profiles"</dd>
+<dt><strong><code>haloExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_halos"</dd>
+<dt><strong><code>mtreeidxExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_mtree_idx"</dd>
+<dt><strong><code>mtreeExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_mtree"</dd>
+<dt><strong><code>haloLimit</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Specifies the maximum number of halos to load into memory</dd>
+<dt><strong><code>skipmtree</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Defaults to False
+If True, will skip trying to read mtree files, avoiding the warning
+message spam if no mtree files are present.</dd>
+<dt><strong><code>printProgress</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Defaults to False
+If True, will print updates on loading progress</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>clusters</code></strong> :&ensp;<code>list</code> of <code><a title="ahfhalotools.objects.Cluster" href="objects.html#ahfhalotools.objects.Cluster">Cluster</a> instances</code></dt>
+<dd>The list of clusters corresponding to each of the clusters specified
+in clusterNums</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="ahfhalotools.filetools.truncateClusters" href="#ahfhalotools.filetools.truncateClusters">truncateClusters()</a></code></dt>
+<dd>truncates files for a set of clusters</dd>
+<dt><code><a title="ahfhalotools.objects.Cluster" href="objects.html#ahfhalotools.objects.Cluster">Cluster</a></code></dt>
+<dd>Stores information about a cluster</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+formatted using the str.format method to produce the correct file names.
+The appropriate keys are:
+clusterNum : the number of the cluster
+simName : the name of the simulation code
+snap : the snapshot number
+z : the redshift</p>
+<p>For example, if the following set of parameters is passed into the function:
+directory = "/home/{simName}/"
+clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/"
+fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+p_{snap:0=3d}.z{z:.3f}"
+simName = "GadgetX"
+With default file name extensions, when loading cluster 34, snapshot number
+99 with z = 0.9 (for example), the following files will be opened:</p>
+<blockquote>
+<p>/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree</p>
+</blockquote></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def loadClusters(clusterNums, snapNums, simName, clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;,
+                 directory = &#34;&#34;, fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}&#34;,
+                 profileExt=&#34;.AHF_profiles&#34;, haloExt=&#34;.AHF_halos&#34;,
+                 mtreeidxExt=&#34;.AHF_mtree_idx&#34;, mtreeExt=&#34;.AHF_mtree&#34;, haloLimit=np.inf,
+                 printProgress = False, skipmtree = False):
+    &#34;&#34;&#34;
+    Loads multiple cluster simulations into memory.
+
+    Parameters
+    ----------
+    clusterNums : list of int
+        The list of cluster numbers to load
+    snapNums : list of int
+        The list of snapshot numbers to load from each cluster in _ascending_
+        order. Should not contain any breaks and should include the snapshot
+        with z = 0.000
+    simName : str
+        The name of the simulation code to be inserted into file names
+        (e.g. &#34;GadgetX&#34;, &#34;GadgetMUSIC&#34;)
+    directory : str, optional
+        The directory the cluster folders are in. If not specified will search
+        from current directory.
+    clusterFolderFmt : str, optional
+        The string format used to determine the names of the clusters&#39; folders
+        Defaults to &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        See notes section for formatting of file strings
+    fileBaseFmt : str, optional
+        The format of the file name for the AHF files
+        Defaults to &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+            _{snap:0=3d}.z{z:.3f}&#34;
+
+    Other Parameters
+    ----------------
+    profileExt : str, optional
+        Defaults to &#34;.AHF_profiles&#34;
+    haloExt : str, optional
+        Defaults to &#34;.AHF_halos&#34;
+    mtreeidxExt : str, optional
+        Defaults to &#34;.AHF_mtree_idx&#34;
+    mtreeExt : str, optional
+        Defaults to &#34;.AHF_mtree&#34;
+    haloLimit : int, optional
+        Specifies the maximum number of halos to load into memory
+    skipmtree : bool, optional
+        Defaults to False
+        If True, will skip trying to read mtree files, avoiding the warning
+        message spam if no mtree files are present.
+    printProgress : bool, optional
+        Defaults to False
+        If True, will print updates on loading progress
+
+    Returns
+    -------
+    clusters : list of ahfhalotools.objects.Cluster instances
+        The list of clusters corresponding to each of the clusters specified
+        in clusterNums
+
+    See Also
+    --------
+    truncateClusters : truncates files for a set of clusters
+    ahfhalotools.objects.Cluster : Stores information about a cluster
+
+    Notes
+    -----
+    The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+    formatted using the str.format method to produce the correct file names.
+    The appropriate keys are:
+        clusterNum : the number of the cluster
+        simName : the name of the simulation code
+        snap : the snapshot number
+        z : the redshift
+
+    For example, if the following set of parameters is passed into the function:
+        directory = &#34;/home/{simName}/&#34;
+        clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+                       p_{snap:0=3d}.z{z:.3f}&#34;
+        simName = &#34;GadgetX&#34;
+    With default file name extensions, when loading cluster 34, snapshot number
+    99 with z = 0.9 (for example), the following files will be opened:
+
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree
+    &#34;&#34;&#34;
+    if not directory.endswith(&#34;/&#34;):
+        directory += &#34;/&#34;
+    if not clusterFolderFmt.endswith(&#34;/&#34;):
+        clusterFolderFmt += &#34;/&#34;
+
+    fmt = SafeFormatter()
+    numClusters = len(clusterNums)
+
+    clusters = []
+    for i, clusterNum in enumerate(clusterNums):
+
+        #input relevant fields for file names
+        inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
+        fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        #check if cluster directory exists, if not the cluster may have been
+        #skipped during truncation, so we skip loading cluster and print a
+        #warning
+        if not os.path.isdir(inputDir):
+            print(&#34;WARNING: Non-existent cluster data:\n{0}&#34;.format(inputDir))
+            continue
+        #get redshifts in folder
+        zs = getZs(inputDir, num = len(snapNums))
+
+        #check if folder is empty
+        if len(zs) == 0:
+            print(&#34;WARNING: Non-existent cluster data:\n{0}&#34;.format(inputDir))
+            continue
+
+        cluster = obj.Cluster(fileBaseName, snapNums, zs, profileExt = profileExt,
+                          haloExt = haloExt, mtreeidxExt = mtreeidxExt,
+                          mtreeExt = mtreeExt, haloLimit = haloLimit,
+                          clusterNum = clusterNum, simName = simName,
+                          skipmtree = skipmtree)
+        clusters.append(cluster)
+        if printProgress:
+            print(&#34;Loaded {0} cluster {1:0=4d}: {2:.1f}%&#34;.format(simName,clusterNum,(i+1)/numClusters * 100))
+    if printProgress:
+        print(&#34;\nLoading for {0} complete.\n&#34;.format(simName))
+    return clusters</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.filetools.truncateClusters"><code class="name flex">
+<span>def <span class="ident">truncateClusters</span></span>(<span>clusterNums, snapNums, simName, haloLimit, outputDir, clusterFolderFmt='NewMDCLUSTER_{clusterNum:0=4d}/', directory='', fileBaseFmt='{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}', profileExt='.AHF_profiles', haloExt='.AHF_halos', mtreeidxExt='.AHF_mtree_idx', mtreeExt='.AHF_mtree', skipmtree=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Truncates files from multiple cluster folders at once</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>clusterNums</code></strong> :&ensp;<code>list</code> of <code>int</code></dt>
+<dd>The list of cluster numbers to load</dd>
+<dt><strong><code>snapNums</code></strong> :&ensp;<code>list</code> of <code>int</code></dt>
+<dd>The list of snapshot numbers to load from each cluster in <em>ascending</em>
+order. Should not contain any breaks and should include the snapshot
+with z = 0.000</dd>
+<dt><strong><code>simName</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the simulation code to be inserted into file names
+(e.g. "GadgetX", "GadgetMUSIC")</dd>
+<dt><strong><code>haloLimit</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of halos to truncate to</dd>
+<dt><strong><code>outputDir</code></strong> :&ensp;<code>str</code></dt>
+<dd>The directory to put the truncated files in. The file hierarchy will
+look the same as in the original data set.</dd>
+<dt><strong><code>directory</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The directory the cluster folders are in. If not specified will search
+from current directory.</dd>
+<dt><strong><code>clusterFolderFmt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The string format used to determine the names of the clusters' folders
+Defaults to "NewMDCLUSTER_{clusterNum:0=4d}/"
+See notes section for formatting of file strings</dd>
+<dt><strong><code>fileBaseFmt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The format of the file name for the AHF files
+Defaults to "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+_{snap:0=3d}.z{z:.3f}"</dd>
+<dt><strong><code>skipmtree</code></strong> :&ensp;<code>bool</code>, default <code>= False</code></dt>
+<dd>Whether to skip reading the .AHF_mtree file. Useful if the mtree files
+are in the non-supported SUSSING-2013 format</dd>
+</dl>
+<h2 id="other-parameters">Other Parameters</h2>
+<dl>
+<dt><strong><code>profileExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_profiles"</dd>
+<dt><strong><code>haloExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_halos"</dd>
+<dt><strong><code>mtreeidxExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_mtree_idx"</dd>
+<dt><strong><code>mtreeExt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Defaults to ".AHF_mtree"</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="ahfhalotools.filetools.loadClusters" href="#ahfhalotools.filetools.loadClusters">loadClusters()</a></code></dt>
+<dd>loads files for a set of clusters</dd>
+<dt><code><a title="ahfhalotools.filetools.truncateFiles" href="#ahfhalotools.filetools.truncateFiles">truncateFiles()</a></code></dt>
+<dd>truncates files for a single cluster</dd>
+<dt><code><a title="ahfhalotools.objects.Cluster" href="objects.html#ahfhalotools.objects.Cluster">Cluster</a></code></dt>
+<dd>Stores information about a cluster</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+formatted using the str.format method to produce the correct file names.
+The appropriate keys are:
+clusterNum : the number of the cluster
+simName : the name of the simulation code
+snap : the snapshot number
+z : the redshift</p>
+<p>For example, if the following set of parameters is passed into the function:
+directory = "/home/{simName}/"
+clusterFolderFmt = "NewMDCLUSTER_{clusterNum:0=4d}/"
+fileBaseFmt = "{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+p_{snap:0=3d}.z{z:.3f}"
+simName = "GadgetX"
+With default file name extensions, when loading cluster 34, snapshot number
+99 with z = 0.9 (for example), the following files will be opened:</p>
+<blockquote>
+<p>/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+/home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree</p>
+</blockquote></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def truncateClusters(clusterNums, snapNums, simName, haloLimit, outputDir,
+                     clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;,
+                     directory = &#34;&#34;, fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap_{snap:0=3d}.z{z:.3f}&#34;,
+                     profileExt=&#34;.AHF_profiles&#34;, haloExt=&#34;.AHF_halos&#34;,
+                     mtreeidxExt=&#34;.AHF_mtree_idx&#34;, mtreeExt=&#34;.AHF_mtree&#34;,
+                     skipmtree = False):
+    &#34;&#34;&#34;
+    Truncates files from multiple cluster folders at once
+
+    Parameters
+    ----------
+    clusterNums : list of int
+        The list of cluster numbers to load
+    snapNums : list of int
+        The list of snapshot numbers to load from each cluster in _ascending_
+        order. Should not contain any breaks and should include the snapshot
+        with z = 0.000
+    simName : str
+        The name of the simulation code to be inserted into file names
+        (e.g. &#34;GadgetX&#34;, &#34;GadgetMUSIC&#34;)
+    haloLimit : int
+        The number of halos to truncate to
+    outputDir : str
+        The directory to put the truncated files in. The file hierarchy will
+        look the same as in the original data set.
+    directory : str, optional
+        The directory the cluster folders are in. If not specified will search
+        from current directory.
+    clusterFolderFmt : str, optional
+        The string format used to determine the names of the clusters&#39; folders
+        Defaults to &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        See notes section for formatting of file strings
+    fileBaseFmt : str, optional
+        The format of the file name for the AHF files
+        Defaults to &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.snap
+            _{snap:0=3d}.z{z:.3f}&#34;
+    skipmtree : bool, default = False
+        Whether to skip reading the .AHF_mtree file. Useful if the mtree files
+        are in the non-supported SUSSING-2013 format
+
+    Other Parameters
+    ----------------
+    profileExt : str, optional
+        Defaults to &#34;.AHF_profiles&#34;
+    haloExt : str, optional
+        Defaults to &#34;.AHF_halos&#34;
+    mtreeidxExt : str, optional
+        Defaults to &#34;.AHF_mtree_idx&#34;
+    mtreeExt : str, optional
+        Defaults to &#34;.AHF_mtree&#34;
+
+    See Also
+    --------
+    loadClusters : loads files for a set of clusters
+    truncateFiles : truncates files for a single cluster
+    ahfhalotools.objects.Cluster : Stores information about a cluster
+
+    Notes
+    -----
+    The parameters clusterFolderFmt, dir, and fileBaseFmt are dynamically
+    formatted using the str.format method to produce the correct file names.
+    The appropriate keys are:
+        clusterNum : the number of the cluster
+        simName : the name of the simulation code
+        snap : the snapshot number
+        z : the redshift
+
+    For example, if the following set of parameters is passed into the function:
+        directory = &#34;/home/{simName}/&#34;
+        clusterFolderFmt = &#34;NewMDCLUSTER_{clusterNum:0=4d}/&#34;
+        fileBaseFmt = &#34;{simName}-NewMDCLUSTER_{clusterNum:0=4d}.sna
+                       p_{snap:0=3d}.z{z:.3f}&#34;
+        simName = &#34;GadgetX&#34;
+    With default file name extensions, when loading cluster 34, snapshot number
+    99 with z = 0.9 (for example), the following files will be opened:
+
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_halos
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_profiles
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree_idx
+    &gt; /home/GadgetX/NewMDCLUSTER_0034/GadgetX-NewMDCLUSTER_0034.snap_099.z0.900.AHF_mtree
+    &#34;&#34;&#34;
+    if not directory.endswith(&#34;/&#34;):
+        directory += &#34;/&#34;
+    if not clusterFolderFmt.endswith(&#34;/&#34;):
+        clusterFolderFmt += &#34;/&#34;
+    if not outputDir.endswith(&#34;/&#34;):
+        outputDir += &#34;/&#34;
+
+    numClusters = len(clusterNums)
+    #using safe formatter to retain unused keys
+    fmt = SafeFormatter()
+
+    for i, clusterNum in enumerate(clusterNums):
+        #format file base name with cluster number and simulation name
+        inputDir = fmt.format(directory + clusterFolderFmt,clusterNum=clusterNum,simName=simName)
+        fileBaseName = fmt.format(directory + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+        outputFileNameBase = fmt.format(outputDir + clusterFolderFmt + fileBaseFmt,clusterNum=clusterNum,simName=simName)
+
+        outputClusterDir = fmt.format(outputDir + clusterFolderFmt, clusterNum=clusterNum, simName=simName)
+        outputDirFmtted = fmt.format(outputDir, clusterNum=clusterNum, simName=simName)
+
+        zs = getZs(inputDir, num = len(snapNums))
+
+        #check if output files exist already, if not create them
+        if not os.path.isdir(outputDirFmtted):
+            os.mkdir(outputDirFmtted)
+        if not os.path.isdir(outputClusterDir):
+            os.mkdir(outputClusterDir)
+
+        #truncate files for cluster
+        try:
+            truncateFiles(fileBaseName,snapNums,zs,outputFileNameBase,haloLimit,
+                              haloFileExt = haloExt,profileFileExt = profileExt,
+                              mtreeidxExt = mtreeidxExt, mtreeExt = mtreeExt,
+                              skipmtree = skipmtree)
+            print(&#34;\n===CLUSTER {0} DONE===    Overall Completion: {1:.1f}%\n&#34;.format(clusterNum, (i+1)/numClusters * 100))
+        except OSError:
+            print(&#34;\n\n===WARNING===\nAn error was encountered while reading the&#34;\
+                  &#34; data from Cluster {0}. Cluster will be skipped. Be sure to &#34;\
+                  &#34;check your data!\n\n&#34;.format(clusterNum))</code></pre>
+</details>
+</dd>
+<dt id="ahfhalotools.filetools.truncateFiles"><code class="name flex">
+<span>def <span class="ident">truncateFiles</span></span>(<span>fileNameBase, snaps, zs, outputFileNameBase, numHalos, haloFileExt='.AHF_halos', profileFileExt='.AHF_profiles', mtreeidxExt='.AHF_mtree_idx', mtreeExt='.AHF_mtree', skipmtree=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Truncates sets of AHF data files for a single cluster such as to shorten
+load times.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>fileNameBase</code></strong> :&ensp;<code>str</code></dt>
+<dd>The format string of the base file name of the files to be truncated
+(including path)
+e.g. "./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}"
+For specifics on formatting see notes section below.</dd>
+<dt><strong><code>snaps</code></strong> :&ensp;<code>list</code> of <code>int</code></dt>
+<dd>snapshot numbers of files to load</dd>
+<dt><strong><code>zs</code></strong> :&ensp;<code>list</code> of <code>float</code></dt>
+<dd>redshifts of snapshots corresponding to snapshot numbers in snaps</dd>
+<dt><strong><code>outputFileNameBase</code></strong> :&ensp;<code>str</code></dt>
+<dd>The format string of the output file. Formatted the same as
+fileNameBase</dd>
+<dt><strong><code>numHalos</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of halos to truncate the files to</dd>
+</dl>
+<h2 id="other-parameters">Other Parameters</h2>
+<dl>
+<dt><strong><code>haloFileExt</code></strong> :&ensp;<code>str</code>, default <code>= ".AHF_halos"</code></dt>
+<dd>File extension to use for AHF_halos files</dd>
+<dt><strong><code>profileFileExt</code></strong> :&ensp;<code>str</code>, default <code>= ".AHF_profiles"</code></dt>
+<dd>File extension to use for AHF_profiles files</dd>
+<dt><strong><code>mtreeidxExt</code></strong> :&ensp;<code>str</code>, default <code>= ".AHF_mtree_idx"</code></dt>
+<dd>File extension to use for AHF_mtree_idx files</dd>
+<dt><strong><code>mtreeExt</code></strong> :&ensp;<code>str</code>, default <code>= ".AHF_mtree"</code></dt>
+<dd>File extension to use for AHF_mtree files</dd>
+<dt><strong><code>skipmtree</code></strong> :&ensp;<code>bool</code>, default <code>= False</code></dt>
+<dd>Whether to skip reading the .AHF_mtree file. Useful when the mtree
+file is in the non-supported SUSSING-2013 format</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="ahfhalotools.filetools.truncateClusters" href="#ahfhalotools.filetools.truncateClusters">truncateClusters()</a></code></dt>
+<dd>truncates files from multiple clusters at once</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>File names are generated using the python str.format() method, specifically
+as: fileNameBase.format(snap = snapNum, z = z)</p>
+<p>So in the example:
+"./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}",
+{snap:0=3d} will be replaced with the snapshot number, including leading
+zeroes to make snapshot number 3 characters, and {z:.3f} will be replaced
+with the redshift to 3 decimal places.</p>
+<p>So if the file being read is for snapshot 97 with redshift 0.986, the file
+base name (without extensions added) will be:
+"./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_097.z0.986"</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def truncateFiles(fileNameBase,snaps,zs,outputFileNameBase,numHalos,
+                  haloFileExt = &#34;.AHF_halos&#34;,profileFileExt = &#34;.AHF_profiles&#34;,
+                  mtreeidxExt = &#34;.AHF_mtree_idx&#34;, mtreeExt = &#34;.AHF_mtree&#34;, skipmtree = False):
+    &#34;&#34;&#34;
+    Truncates sets of AHF data files for a single cluster such as to shorten
+    load times.
+
+    Parameters
+    ----------
+    fileNameBase : str
+        The format string of the base file name of the files to be truncated
+        (including path)
+        e.g. &#34;./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}&#34;
+        For specifics on formatting see notes section below.
+    snaps : list of int
+        snapshot numbers of files to load
+    zs : list of float
+        redshifts of snapshots corresponding to snapshot numbers in snaps
+    outputFileNameBase : str
+        The format string of the output file. Formatted the same as
+        fileNameBase
+    numHalos : int
+        The number of halos to truncate the files to
+
+    Other Parameters
+    ----------------
+    haloFileExt : str, default = &#34;.AHF_halos&#34;
+        File extension to use for AHF_halos files
+    profileFileExt : str, default = &#34;.AHF_profiles&#34;
+        File extension to use for AHF_profiles files
+    mtreeidxExt : str, default = &#34;.AHF_mtree_idx&#34;
+        File extension to use for AHF_mtree_idx files
+    mtreeExt : str, default = &#34;.AHF_mtree&#34;
+        File extension to use for AHF_mtree files
+    skipmtree : bool, default = False
+        Whether to skip reading the .AHF_mtree file. Useful when the mtree
+        file is in the non-supported SUSSING-2013 format
+
+    See Also
+    --------
+    truncateClusters : truncates files from multiple clusters at once
+
+    Notes
+    -----
+    File names are generated using the python str.format() method, specifically
+    as: fileNameBase.format(snap = snapNum, z = z)
+
+    So in the example:
+    &#34;./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_{snap:0=3d}.z{z:.3f}&#34;,
+    {snap:0=3d} will be replaced with the snapshot number, including leading
+    zeroes to make snapshot number 3 characters, and {z:.3f} will be replaced
+    with the redshift to 3 decimal places.
+
+    So if the file being read is for snapshot 97 with redshift 0.986, the file
+    base name (without extensions added) will be:
+    &#34;./GadgetX/GadgetX-NewMDCLUSTER_0001.snap_097.z0.986&#34;
+    &#34;&#34;&#34;
+    if len(zs) != len(snaps):
+        raise ValueError(&#34;snaps and zs are not of same length!&#34;)
+
+    numFiles = len(zs)
+
+    #loop through snapshots
+    for i in range(numFiles):
+        try:
+            fileName = fileNameBase.format(snap=snaps[i],z=zs[i])
+        except KeyError as err:
+            raise ValueError(&#34;fileNameBase is not properly formatted! String&#34;\
+                            &#34; contains a key that is not z or snap&#34;) from err
+        try:
+            outName = outputFileNameBase.format(snap = snaps[i],z = zs[i])
+        except KeyError as err:
+            raise ValueError(&#34;outName is not properly formatted! String&#34;\
+                            &#34; contains a key that is not z or snap&#34;) from err
+
+        print(&#34;About to truncate {0}:&#34;.format(fileName))
+        #truncate profiles and halos files
+
+        snap = obj.Snapshot(snaps[i],zs[i],fileName+haloFileExt,
+                        fileName+profileFileExt, haloLimit = numHalos)
+        snap.writeFiles(outName)
+        print(&#34;    Profiles and Halos done&#34;)
+
+        #truncate mtree_idx file
+        try:
+            mtreeidxrows = np.genfromtxt(fileName + mtreeidxExt, max_rows = numHalos)
+
+            #check if mtreeidxrows is 1D and make it 2D if so
+            if mtreeidxrows.ndim == 1:
+                mtreeidxrows = np.array([mtreeidxrows])
+            np.savetxt(outName + mtreeidxExt,mtreeidxrows,fmt=&#39;%d&#39;)
+            print(&#34;    mtree_idx done&#34;)
+        except IOError:
+            print(&#34;    WARNING: mtree_idx file not found&#34;)
+
+        #truncate mtree file
+        if not skipmtree:
+            try:
+                mtreerows = np.genfromtxt(fileName + mtreeExt)
+                if len(mtreerows[0]) == 3:
+                    #non sussing format
+                    #loop through rows to check how many rows need to be written to new file
+                    haloCounter = 0
+                    lineCounter = 0
+                    while haloCounter &lt; numHalos:
+                        haloID, haloPart, numProg = mtreerows[lineCounter,:]
+                        lineCounter += int(numProg)+1
+                        haloCounter += 1
+                    #lineCounter is now equal to the number of lines that we care about
+                    np.savetxt(outName+mtreeExt,mtreerows[0:lineCounter,:],fmt=&#39;%d&#39;)
+                    print(&#34;    mtree done&#34;)
+                else:
+                    #wrong format
+                    print(&#34;    WARNING: mtree is not correct format!&#34;)
+            except IOError:
+                print(&#34;    WARNING: mtree file not found&#34;)
+            except ValueError:
+                print(&#34;    WARNING: mtree is not of correct format! It may be in SUSSING-2013 format, which is not supported&#34;)
+        print(&#34;Completed truncation: {0:.1f}%&#34;.format((i+1)/numFiles * 100))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ahfhalotools.filetools.SafeFormatter"><code class="flex name class">
+<span>class <span class="ident">SafeFormatter</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>A string formatter used to preserve unused keys.</p>
+<p>Taken from <a href="https://stackoverflow.com/a/34033230">https://stackoverflow.com/a/34033230</a></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SafeFormatter(string.Formatter):
+    &#34;&#34;&#34;
+    A string formatter used to preserve unused keys.
+
+    Taken from https://stackoverflow.com/a/34033230
+    &#34;&#34;&#34;
+    def vformat(self, format_string, args, kwargs):
+        args_len = len(args)  # for checking IndexError
+        tokens = []
+        for (lit, name, spec, conv) in self.parse(format_string):
+            # re-escape braces that parse() unescaped
+            lit = lit.replace(&#39;{&#39;, &#39;{{&#39;).replace(&#39;}&#39;, &#39;}}&#39;)
+            # only lit is non-None at the end of the string
+            if name is None:
+                tokens.append(lit)
+            else:
+                # but conv and spec are None if unused
+                conv = &#39;!&#39; + conv if conv else &#39;&#39;
+                spec = &#39;:&#39; + spec if spec else &#39;&#39;
+                # name includes indexing ([blah]) and attributes (.blah)
+                # so get just the first part
+                fp = name.split(&#39;[&#39;)[0].split(&#39;.&#39;)[0]
+                # treat as normal if fp is empty (an implicit
+                # positional arg), a digit (an explicit positional
+                # arg) or if it is in kwargs
+                if not fp or fp.isdigit() or fp in kwargs:
+                    tokens.extend([lit, &#39;{&#39;, name, conv, spec, &#39;}&#39;])
+                # otherwise escape the braces
+                else:
+                    tokens.extend([lit, &#39;{{&#39;, name, conv, spec, &#39;}}&#39;])
+        format_string = &#39;&#39;.join(tokens)  # put the string back together
+        # finally call the default formatter
+        return string.Formatter.vformat(self, format_string, args, kwargs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>string.Formatter</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ahfhalotools.filetools.SafeFormatter.vformat"><code class="name flex">
+<span>def <span class="ident">vformat</span></span>(<span>self, format_string, args, kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def vformat(self, format_string, args, kwargs):
+    args_len = len(args)  # for checking IndexError
+    tokens = []
+    for (lit, name, spec, conv) in self.parse(format_string):
+        # re-escape braces that parse() unescaped
+        lit = lit.replace(&#39;{&#39;, &#39;{{&#39;).replace(&#39;}&#39;, &#39;}}&#39;)
+        # only lit is non-None at the end of the string
+        if name is None:
+            tokens.append(lit)
+        else:
+            # but conv and spec are None if unused
+            conv = &#39;!&#39; + conv if conv else &#39;&#39;
+            spec = &#39;:&#39; + spec if spec else &#39;&#39;
+            # name includes indexing ([blah]) and attributes (.blah)
+            # so get just the first part
+            fp = name.split(&#39;[&#39;)[0].split(&#39;.&#39;)[0]
+            # treat as normal if fp is empty (an implicit
+            # positional arg), a digit (an explicit positional
+            # arg) or if it is in kwargs
+            if not fp or fp.isdigit() or fp in kwargs:
+                tokens.extend([lit, &#39;{&#39;, name, conv, spec, &#39;}&#39;])
+            # otherwise escape the braces
+            else:
+                tokens.extend([lit, &#39;{{&#39;, name, conv, spec, &#39;}}&#39;])
+    format_string = &#39;&#39;.join(tokens)  # put the string back together
+    # finally call the default formatter
+    return string.Formatter.vformat(self, format_string, args, kwargs)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ahfhalotools" href="index.html">ahfhalotools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="ahfhalotools.filetools.getMusZs" href="#ahfhalotools.filetools.getMusZs">getMusZs</a></code></li>
+<li><code><a title="ahfhalotools.filetools.getSnapNumToZMapGX" href="#ahfhalotools.filetools.getSnapNumToZMapGX">getSnapNumToZMapGX</a></code></li>
+<li><code><a title="ahfhalotools.filetools.getSnapNumToZMapGiz" href="#ahfhalotools.filetools.getSnapNumToZMapGiz">getSnapNumToZMapGiz</a></code></li>
+<li><code><a title="ahfhalotools.filetools.getZfromFileName" href="#ahfhalotools.filetools.getZfromFileName">getZfromFileName</a></code></li>
+<li><code><a title="ahfhalotools.filetools.getZs" href="#ahfhalotools.filetools.getZs">getZs</a></code></li>
+<li><code><a title="ahfhalotools.filetools.loadClusters" href="#ahfhalotools.filetools.loadClusters">loadClusters</a></code></li>
+<li><code><a title="ahfhalotools.filetools.truncateClusters" href="#ahfhalotools.filetools.truncateClusters">truncateClusters</a></code></li>
+<li><code><a title="ahfhalotools.filetools.truncateFiles" href="#ahfhalotools.filetools.truncateFiles">truncateFiles</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ahfhalotools.filetools.SafeFormatter" href="#ahfhalotools.filetools.SafeFormatter">SafeFormatter</a></code></h4>
+<ul class="">
+<li><code><a title="ahfhalotools.filetools.SafeFormatter.vformat" href="#ahfhalotools.filetools.SafeFormatter.vformat">vformat</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,3 +1,7 @@
+"""
+Some useful methods for making 3D plots of simulations
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors

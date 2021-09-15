@@ -6,13 +6,17 @@ For more information visit https://github.com/BenDavisonPetch/ahfhalotools
 The majority of analysis is done via the ahfhalotools.objects.Cluster class. For
 examples on usage, there are example scripts available at:
 https://github.com/BenDavisonPetch/ahfhalotools/tree/main/examples
+These scripts are provided without data, as the files are large and can't go
+on GitHub.
 
-Documentation is available as docstrings within the code, which can be viewed
-using the built-in ``help`` function:
+Documentation is available in two places: the first is as docstrings within the
+code, which can be viewed using the built-in ``help`` function:
 
     >>> from ahfhalotools.objects import Cluster
     >>> help(Cluster)
     Help on class Cluster in module ahfhalotools.objects: ...
+
+The other way to view documentation is in a web browser at
 """
 
-__all__ = ["analysis","filetools","objects"]
+#__all__ = ["analysis","filetools","objects"]
