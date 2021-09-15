@@ -16,7 +16,8 @@ code, which can be viewed using the built-in ``help`` function:
     >>> help(Cluster)
     Help on class Cluster in module ahfhalotools.objects: ...
 
-The other way to view documentation is in a web browser at
+The other way to view documentation is in a web browser at:
+https://htmlpreview.github.io/?https://raw.githubusercontent.com/BenDavisonPetch/ahfhalotools/main/docs/ahfhalotools/index.html
 """
 
 #__all__ = ["analysis","filetools","objects"]

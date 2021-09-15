@@ -32,7 +32,7 @@ code, which can be viewed using the built-in ``help`` function:
     Help on class Cluster in module ahfhalotools.objects: ...
 ```
 
-The other way to view documentation is in a web browser at
+The other way to view documentation is in a web browser [here](https://htmlpreview.github.io/?https://raw.githubusercontent.com/BenDavisonPetch/ahfhalotools/main/docs/ahfhalotools/index.html)
 
 ## AHF documentation
 For information on AMIGA's Halo Finder, including documentation and output file formats, you can visit their website [here](http://popia.ft.uam.es/AHF/Download.html).
